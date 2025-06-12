@@ -28,7 +28,7 @@ wss.on('connection', ws => {
   });
 
   ws.on('error', err => {
-    console.error("WebSocket error:", err); // <-- Error log
+    console.error("WebSocket error:", err);
   });
 });
 

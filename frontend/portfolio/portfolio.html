@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="portfolio.css">
+</head>
+<body>
+        <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">NEON<span>TRADER</span></div>
+        <div class="nav-links">
+            <a href="../dashboard/dashboard.html" class="active">Dashboard</a>
+            <a href="../market/market.html" class="active">Market</a>
+            <a href="../portfolio/portfolio.html" class="active" style="color: var(--neon-blue);">My Portfolio</a>
+            <a href="../profile/profile.html" class="active">Profile</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">MY CREATED STOCKS</h1>
+            <button class="create-btn">+ Create New Stock</button>
+        </div>
+
+        <div class="stock-grid">
+            <!-- Stock Card 1 -->
+            <div class="stock-card featured">
+                <div class="card-header">
+                    <div class="card-logo">PP</div>
+                    <div class="card-info">
+                        <div class="card-name">PetPals <span class="card-symbol">PP</span></div>
+                        <p class="card-description">Next-gen pet care technology with AI-powered health monitoring for your furry friends.</p>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <div class="price-info">
+                        <span class="price-label">Current Price</span>
+                        <div class="card-price">$45.75</div>
+                    </div>
+                    <div class="price-change">
+                        <span class="change-label">24h Change</span>
+                        <div class="card-change positive">▲ 8.2%</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Volume</div>
+                        <div class="stat-value">12,400</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Market Cap</div>
+                        <div class="stat-value">$1.2M</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Owners</div>
+                        <div class="stat-value">84</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Your Shares</div>
+                        <div class="stat-value">500 (25%)</div>
+                    </div>
+                </div>
+
+                <div class="activity-section">
+                    <h3 class="section-title">⚡ Recent Activity</h3>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-info">
+                                <span class="activity-type">User "CryptoWolf" bought 50 shares</span>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                            <span class="activity-amount positive">+$2,287.50</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-info">
+                                <span class="activity-type">Price increased by 3.2%</span>
+                                <span class="activity-time">5 hours ago</span>
+                            </div>
+                            <span class="activity-amount positive">▲</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-info">
+                                <span class="activity-type">User "DayTrader" sold 20 shares</span>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                            <span class="activity-amount negative">-$915.00</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-actions">
+                    <button class="action-btn edit-btn">✏️ Edit</button>
+                    <button class="action-btn stats-btn">📊 Detailed Stats</button>
+                    <button class="action-btn promote-btn">🚀 Promote</button>
+                </div>
+            </div>
+
+            <!-- Stock Card 2 -->
+            <div class="stock-card">
+                <div class="card-header">
+                    <div class="card-logo">ER</div>
+                    <div class="card-info">
+                        <div class="card-name">EcoRide <span class="card-symbol">ER</span></div>
+                        <p class="card-description">Electric bike sharing network with solar-powered charging stations in urban areas.</p>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <div class="price-info">
+                        <span class="price-label">Current Price</span>
+                        <div class="card-price">$32.50</div>
+                    </div>
+                    <div class="price-change">
+                        <span class="change-label">24h Change</span>
+                        <div class="card-change negative">▼ 3.1%</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Volume</div>
+                        <div class="stat-value">8,750</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Market Cap</div>
+                        <div class="stat-value">$875K</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Owners</div>
+                        <div class="stat-value">62</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Your Shares</div>
+                        <div class="stat-value">300 (15%)</div>
+                    </div>
+                </div>
+
+                <div class="activity-section">
+                    <h3 class="section-title">⚡ Recent Activity</h3>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-info">
+                                <span class="activity-type">Price decreased by 1.5%</span>
+                                <span class="activity-time">4 hours ago</span>
+                            </div>
+                            <span class="activity-amount negative">▼</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-info">
+                                <span class="activity-type">User "EcoWarrior" bought 25 shares</span>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                            <span class="activity-amount positive">+$812.50</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-info">
+                                <span class="activity-type">User "QuickCash" sold 40 shares</span>
+                                <span class="activity-time">2 days ago</span>
+                            </div>
+                            <span class="activity-amount negative">-$1,300.00</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-actions">
+                    <button class="action-btn edit-btn">✏️ Edit</button>
+                    <button class="action-btn stats-btn">📊 Detailed Stats</button>
+                    <button class="action-btn promote-btn">🚀 Promote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <script src="portfolio.jsx"></script>
+     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+</html>

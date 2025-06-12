@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="market.css">
+</head>
+<body>
+         <nav class="navbar">
+        <div class="logo">Neon<span>Trader</span></div>
+        <div class="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="nav-links">
+            <a href="../dashboard/dashboard.html" class="active">Dashboard</a>
+            <a href="../market/market.html" style="color: var(--neon-blue);" class="active">Market</a>
+            <a href="../portfolio/portfolio.html" class="active">My Portfolio</a>
+            <a href="../profile/profile.html">Profile</a> 
+        </div>
+    </nav>
+
+    <div class="market-container">
+        <!-- Market Header -->
+        <div class="market-header">
+            <h1 class="market-title">NEON MARKET</h1>
+            <div class="market-controls">
+                <div class="cyber-input">
+                    <input type="text" placeholder="Search crypto, stocks, NFTs...">
+                </div>
+                <button class="cyber-button">
+                    <span>ADVANCED FILTERS</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Market Tabs -->
+        <div class="market-tabs">
+            <button class="cyber-tab active">ALL ASSETS</button>
+            <button class="cyber-tab">CRYPTO</button>
+            <button class="cyber-tab">STOCKS</button>
+            <button class="cyber-tab">NFTs</button>
+            <button class="cyber-tab">METAVERSE</button>
+            <button class="cyber-tab">AI TOKENS</button>
+            <button class="cyber-tab">FAVORITES</button>
+        </div>
+
+        <!-- Market Grid -->
+        <div class="market-grid">
+            <!-- Featured Card -->
+            <div class="cyber-card featured">
+                <div class="glitch-effect"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: center;">
+                        <div class="card-logo">N</div>
+                        <div class="card-info">
+                            <div class="card-name">
+                                NEONCHAIN
+                                <span class="card-symbol">NCH</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-price">$342.18</div>
+                </div>
+                <div class="card-change positive">+8.42%</div>
+                
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Market Cap</div>
+                        <div class="stat-value">$4.82B</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Volume (24h)</div>
+                        <div class="stat-value">$285.7M</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Circulating</div>
+                        <div class="stat-value">14.1M NCH</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">ATH</div>
+                        <div class="stat-value">$398.76</div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="action-btn buy-btn">BUY</button>
+                    <button class="action-btn sell-btn">SELL</button>
+                    <button class="action-btn watch-btn">★</button>
+                </div>
+            </div>
+
+            <!-- Regular Card 1 -->
+            <div class="cyber-card">
+                <div class="card-header">
+                    <div style="display: flex; align-items: center;">
+                        <div class="card-logo">Q</div>
+                        <div class="card-info">
+                            <div class="card-name">
+                                QUANTUM AI
+                                <span class="card-symbol">QAI</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-price">$178.32</div>
+                </div>
+                <div class="card-change positive">+2.15%</div>
+                
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Market Cap</div>
+                        <div class="stat-value">$2.15B</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Volume (24h)</div>
+                        <div class="stat-value">$142.3M</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Circulating</div>
+                        <div class="stat-value">12.1M QAI</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">ATH</div>
+                        <div class="stat-value">$210.45</div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="action-btn buy-btn">BUY</button>
+                    <button class="action-btn sell-btn">SELL</button>
+                    <button class="action-btn watch-btn">★</button>
+                </div>
+            </div>
+
+            <!-- Regular Card 2 -->
+            <div class="cyber-card">
+                <div class="card-header">
+                    <div style="display: flex; align-items: center;">
+                        <div class="card-logo">C</div>
+                        <div class="card-info">
+                            <div class="card-name">
+                                CYBERBYTE
+                                <span class="card-symbol">CYBR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-price">$92.45</div>
+                </div>
+                <div class="card-change negative">-1.87%</div>
+                
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Market Cap</div>
+                        <div class="stat-value">$1.42B</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Volume (24h)</div>
+                        <div class="stat-value">$98.7M</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Circulating</div>
+                        <div class="stat-value">15.4M CYBR</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">ATH</div>
+                        <div class="stat-value">$128.76</div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="action-btn buy-btn">BUY</button>
+                    <button class="action-btn sell-btn">SELL</button>
+                    <button class="action-btn watch-btn">★</button>
+                </div>
+            </div>
+
+
+ <script src="market.jsx"></script>
+ <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+</html>
