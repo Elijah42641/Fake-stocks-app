@@ -1,294 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="dashboard.css">
-</head>
-<body>
-     <nav class="navbar">
-        <div class="logo">Neon<span>Trader</span></div>
-        <div class="hamburger">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <div class="nav-links">
-            <a href="../dashboard/dashboard.html" class="active" style="color: var(--neon-blue);">Dashboard</a>
-            <a href="../market/market.html" class="active">Market</a>
-            <a href="../portfolio/portfolio.html" class="active">My Portfolio</a>
-            <a href="../profile/profile.html">Profile</a>
-        </div>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">Neon<span>Trader</span></div>
+      <div class="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="nav-links">
+        <a
+          href="../dashboard/dashboard.html"
+          class="active"
+          style="color: var(--neon-blue)"
+          >Dashboard</a
+        >
+        <a href="../market/market.html" class="active">Market</a>
+        <a href="../portfolio/portfolio.html" class="active">My Portfolio</a>
+        <a href="../profile/profile.html">Profile</a>
+      </div>
     </nav>
 
     <div class="container">
-        <div class="dashboard-header">
-            <div class="user-info">
-                <div class="user-avatar">JD</div>
-                <div class="balance">
-                    Balance: <span class="balance-amount">1,500</span> coins
-                </div>
-            </div>
-            <div class="daily-bonus">
-                Claim Daily 500 Coins
-            </div>
+      <div class="dashboard-header">
+        <div class="user-info">
+          <div class="user-avatar">JD</div>
+          <div class="balance">
+            Balance: <span class="balance-amount">1,500</span> coins
+          </div>
         </div>
+        <div class="daily-bonus">Claim Daily 500 Coins</div>
+      </div>
 
-        <div class="market-section">
-            <h2 class="section-title flicker">Trending Stocks</h2>
-            <div class="stock-grid">
-                <div class="stock-card">
-                    <div class="stock-header">
-                        <div class="stock-name">CYBR</div>
-                        <div class="stock-price">245 <span class="stock-change positive">+12.5%</span></div>
-                    </div>
-                    <div class="stock-details">
-                        Cybernetics Corp - Leading manufacturer of neural interfaces and cyberware.
-                    </div>
-                    <div class="stock-actions">
-                        <button class="btn btn-buy">Buy (500 min)</button>
-                        <button class="btn btn-sell">Sell</button>
-                    </div>
-                </div>
-
-                <div class="stock-card">
-                    <div class="stock-header">
-                        <div class="stock-name">NOVA</div>
-                        <div class="stock-price">178 <span class="stock-change negative">-5.3%</span></div>
-                    </div>
-                    <div class="stock-details">
-                        Nova Energy - Revolutionary quantum power cells for the next generation.
-                    </div>
-                    <div class="stock-actions">
-                        <button class="btn btn-buy">Buy (500 min)</button>
-                        <button class="btn btn-sell">Sell</button>
-                    </div>
-                </div>
-
-                <div class="stock-card">
-                    <div class="stock-header">
-                        <div class="stock-name">SYNTH</div>
-                        <div class="stock-price">312 <span class="stock-change positive">+24.7%</span></div>
-                    </div>
-                    <div class="stock-details">
-                        Synthetic Arts - Creators of hyper-realistic AI companions and androids.
-                    </div>
-                    <div class="stock-actions">
-                        <button class="btn btn-buy">Buy (500 min)</button>
-                        <button class="btn btn-sell">Sell</button>
-                    </div>
-                </div>
+      <div class="market-section">
+        <h2 class="section-title flicker">Trending Stocks</h2>
+        <div class="stock-grid">
+          <div class="stock-card">
+            <div class="stock-header">
+              <div class="stock-name">CYBR</div>
+              <div class="stock-price">
+                245 <span class="stock-change positive">+12.5%</span>
+              </div>
             </div>
-        </div>
-
-        <div class="leaderboard">
-            <h2 class="section-title flicker">Monthly Leaderboard</h2>
-            <div class="leaderboard-grid">
-                <div class="leaderboard-card">
-                    <h3 class="leaderboard-title neon-text" style="color: var(--neon-green);">Top by Volume</h3>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">1</span>
-                        <span class="leaderboard-name">CYBR</span>
-                        <span class="leaderboard-value">2.4M coins</span>
-                    </div>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">2</span>
-                        <span class="leaderboard-name">NOVA</span>
-                        <span class="leaderboard-value">1.8M coins</span>
-                    </div>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">3</span>
-                        <span class="leaderboard-name">SYNTH</span>
-                        <span class="leaderboard-value">1.5M coins</span>
-                    </div>
-                </div>
-
-                <div class="leaderboard-card">
-                    <h3 class="leaderboard-title neon-text" style="color: var(--neon-blue);">Top Gainers</h3>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">1</span>
-                        <span class="leaderboard-name">SYNTH</span>
-                        <span class="leaderboard-value positive">+24.7%</span>
-                    </div>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">2</span>
-                        <span class="leaderboard-name">CYBR</span>
-                        <span class="leaderboard-value positive">+12.5%</span>
-                    </div>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">3</span>
-                        <span class="leaderboard-name">VOID</span>
-                        <span class="leaderboard-value positive">+8.2%</span>
-                    </div>
-                </div>
-
-                <div class="leaderboard-card">
-                    <h3 class="leaderboard-title neon-text" style="color: var(--purple-accent);">Your Positions</h3>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">15</span>
-                        <span class="leaderboard-name">CYBR</span>
-                        <span class="leaderboard-value positive">+12.5%</span>
-                    </div>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">42</span>
-                        <span class="leaderboard-name">NOVA</span>
-                        <span class="leaderboard-value negative">-5.3%</span>
-                    </div>
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-pos">-</span>
-                        <span class="leaderboard-name">Overall Rank</span>
-                        <span class="leaderboard-value">27th</span>
-                    </div>
-                </div>
+            <div class="stock-details">
+              Cybernetics Corp - Leading manufacturer of neural interfaces and
+              cyberware.
             </div>
+            <div class="stock-actions">
+              <button class="btn btn-buy">Buy (500 min)</button>
+              <button class="btn btn-sell">Sell</button>
+            </div>
+          </div>
+
+          <div class="stock-card">
+            <div class="stock-header">
+              <div class="stock-name">NOVA</div>
+              <div class="stock-price">
+                178 <span class="stock-change negative">-5.3%</span>
+              </div>
+            </div>
+            <div class="stock-details">
+              Nova Energy - Revolutionary quantum power cells for the next
+              generation.
+            </div>
+            <div class="stock-actions">
+              <button class="btn btn-buy">Buy (500 min)</button>
+              <button class="btn btn-sell">Sell</button>
+            </div>
+          </div>
+
+          <div class="stock-card">
+            <div class="stock-header">
+              <div class="stock-name">SYNTH</div>
+              <div class="stock-price">
+                312 <span class="stock-change positive">+24.7%</span>
+              </div>
+            </div>
+            <div class="stock-details">
+              Synthetic Arts - Creators of hyper-realistic AI companions and
+              androids.
+            </div>
+            <div class="stock-actions">
+              <button class="btn btn-buy">Buy (500 min)</button>
+              <button class="btn btn-sell">Sell</button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="leaderboard">
+        <h2 class="section-title flicker">Monthly Leaderboard</h2>
+        <div class="leaderboard-grid">
+          <div class="leaderboard-card">
+            <h3
+              class="leaderboard-title neon-text"
+              style="color: var(--neon-green)"
+            >
+              Top by Volume
+            </h3>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">1</span>
+              <span class="leaderboard-name">CYBR</span>
+              <span class="leaderboard-value">2.4M coins</span>
+            </div>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">2</span>
+              <span class="leaderboard-name">NOVA</span>
+              <span class="leaderboard-value">1.8M coins</span>
+            </div>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">3</span>
+              <span class="leaderboard-name">SYNTH</span>
+              <span class="leaderboard-value">1.5M coins</span>
+            </div>
+          </div>
+
+          <div class="leaderboard-card">
+            <h3
+              class="leaderboard-title neon-text"
+              style="color: var(--neon-blue)"
+            >
+              Top Gainers
+            </h3>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">1</span>
+              <span class="leaderboard-name">SYNTH</span>
+              <span class="leaderboard-value positive">+24.7%</span>
+            </div>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">2</span>
+              <span class="leaderboard-name">CYBR</span>
+              <span class="leaderboard-value positive">+12.5%</span>
+            </div>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">3</span>
+              <span class="leaderboard-name">VOID</span>
+              <span class="leaderboard-value positive">+8.2%</span>
+            </div>
+          </div>
+
+          <div class="leaderboard-card">
+            <h3
+              class="leaderboard-title neon-text"
+              style="color: var(--purple-accent)"
+            >
+              Your Positions
+            </h3>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">15</span>
+              <span class="leaderboard-name">CYBR</span>
+              <span class="leaderboard-value positive">+12.5%</span>
+            </div>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">42</span>
+              <span class="leaderboard-name">NOVA</span>
+              <span class="leaderboard-value negative">-5.3%</span>
+            </div>
+            <div class="leaderboard-item">
+              <span class="leaderboard-pos">-</span>
+              <span class="leaderboard-name">Overall Rank</span>
+              <span class="leaderboard-value">27th</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-
-        <!-- Portfolio Performance Section -->
-        <div class="portfolio-section">
-            <h2 class="section-title flicker">Portfolio Performance</h2>
-            <div class="performance-grid">
-                <div class="performance-card">
-                    <div class="performance-header">
-                        <div class="performance-title">Value Trend</div>
-                        <div class="performance-time">Last 7 Days</div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="portfolioChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="performance-stats">
-                    <div class="stat-card">
-                        <div class="stat-value">+12.7%</div>
-                        <div class="stat-label">24h Change</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">3</div>
-                        <div class="stat-label">Active Holdings</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">1,842</div>
-                        <div class="stat-label">Total Coins</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">27th</div>
-                        <div class="stat-label">Global Rank</div>
-                    </div>
-                </div>
-            </div>
+    <!-- Portfolio Performance Section -->
+    <div class="portfolio-section">
+      <h2 class="section-title flicker">Portfolio Performance</h2>
+      <div class="performance-grid">
+        <div class="performance-card">
+          <div class="performance-header">
+            <div class="performance-title">Value Trend</div>
+            <div class="performance-time">Last 7 Days</div>
+          </div>
+          <div class="chart-container">
+            <canvas id="portfolioChart"></canvas>
+          </div>
         </div>
 
-        <!-- Market News Section -->
-        <div class="news-section">
-            <h2 class="section-title flicker">Market Pulse</h2>
-            <div class="news-grid">
-                <div class="news-card breaking">
-                    <div class="news-tag">BREAKING</div>
-                    <h3 class="news-title">CYBR Announces Neural Link Breakthrough</h3>
-                    <p class="news-excerpt">Cybernetics Corp stock surges 18% after FDA approval of their new direct brain interface technology.</p>
-                    <div class="news-meta">
-                        <span class="news-time">2 min ago</span>
-                        <span class="news-source">NeonWire</span>
-                    </div>
-                </div>
-                
-                <div class="news-card">
-                    <h3 class="news-title">Quantum Bubble Fears Grow</h3>
-                    <p class="news-excerpt">Analysts warn Nova Energy valuations may be overheating as short interest reaches record levels.</p>
-                    <div class="news-meta">
-                        <span class="news-time">47 min ago</span>
-                        <span class="news-source">MarketWatch</span>
-                    </div>
-                </div>
-                
-                <div class="news-card">
-                    <h3 class="news-title">SYNTH Androids Banned in 3 Districts</h3>
-                    <p class="news-excerpt">Municipal restrictions lead to sell-off despite strong earnings report from Synthetic Arts.</p>
-                    <div class="news-meta">
-                        <span class="news-time">2 hours ago</span>
-                        <span class="news-source">TechPulse</span>
-                    </div>
-                </div>
-            </div>
+        <div class="performance-stats">
+          <div class="stat-card">
+            <div class="stat-value">+12.7%</div>
+            <div class="stat-label">24h Change</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Active Holdings</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">1,842</div>
+            <div class="stat-label">Total Coins</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">27th</div>
+            <div class="stat-label">Global Rank</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market News Section -->
+    <div class="news-section">
+      <h2 class="section-title flicker">Market Pulse</h2>
+      <div class="news-grid">
+        <div class="news-card breaking">
+          <div class="news-tag">BREAKING</div>
+          <h3 class="news-title">CYBR Announces Neural Link Breakthrough</h3>
+          <p class="news-excerpt">
+            Cybernetics Corp stock surges 18% after FDA approval of their new
+            direct brain interface technology.
+          </p>
+          <div class="news-meta">
+            <span class="news-time">2 min ago</span>
+            <span class="news-source">NeonWire</span>
+          </div>
         </div>
 
-        <!-- Transaction History Section -->
-        <div class="transactions-section">
-            <h2 class="section-title flicker">Recent Activity</h2>
-            <div class="transactions-header">
-                <div class="transactions-filter">
-                    <button class="filter-btn active">All</button>
-                    <button class="filter-btn">Buys</button>
-                    <button class="filter-btn">Sells</button>
-                    <button class="filter-btn">Transfers</button>
-                </div>
-                <div class="transactions-search">
-                    <input type="text" placeholder="Search transactions...">
-                </div>
-            </div>
-            
-            <div class="transactions-list">
-                <div class="transaction-item buy">
-                    <div class="transaction-icon">B</div>
-                    <div class="transaction-details">
-                        <div class="transaction-stock">CYBR</div>
-                        <div class="transaction-type">Buy Order</div>
-                    </div>
-                    <div class="transaction-meta">
-                        <div class="transaction-amount">+50 shares @ 245</div>
-                        <div class="transaction-time">10:24 AM</div>
-                    </div>
-                    <div class="transaction-value positive">12,250 coins</div>
-                </div>
-                
-                <div class="transaction-item sell">
-                    <div class="transaction-icon">S</div>
-                    <div class="transaction-details">
-                        <div class="transaction-stock">NOVA</div>
-                        <div class="transaction-type">Sell Order</div>
-                    </div>
-                    <div class="transaction-meta">
-                        <div class="transaction-amount">-20 shares @ 178</div>
-                        <div class="transaction-time">Yesterday</div>
-                    </div>
-                    <div class="transaction-value negative">3,560 coins</div>
-                </div>
-                
-                <div class="transaction-item bonus">
-                    <div class="transaction-icon">+</div>
-                    <div class="transaction-details">
-                        <div class="transaction-stock">System</div>
-                        <div class="transaction-type">Daily Bonus</div>
-                    </div>
-                    <div class="transaction-meta">
-                        <div class="transaction-amount">Daily reward</div>
-                        <div class="transaction-time">Yesterday</div>
-                    </div>
-                    <div class="transaction-value positive">500 coins</div>
-                </div>
-                
-                <div class="transaction-item buy">
-                    <div class="transaction-icon">B</div>
-                    <div class="transaction-details">
-                        <div class="transaction-stock">SYNTH</div>
-                        <div class="transaction-type">Buy Order</div>
-                    </div>
-                    <div class="transaction-meta">
-                        <div class="transaction-amount">+15 shares @ 312</div>
-                        <div class="transaction-time">2 days ago</div>
-                    </div>
-                    <div class="transaction-value negative">4,680 coins</div>
-                </div>
-            </div>
-            
-            <button class="btn view-all">View All Activity</button>
+        <div class="news-card">
+          <h3 class="news-title">Quantum Bubble Fears Grow</h3>
+          <p class="news-excerpt">
+            Analysts warn Nova Energy valuations may be overheating as short
+            interest reaches record levels.
+          </p>
+          <div class="news-meta">
+            <span class="news-time">47 min ago</span>
+            <span class="news-source">MarketWatch</span>
+          </div>
         </div>
 
+        <div class="news-card">
+          <h3 class="news-title">SYNTH Androids Banned in 3 Districts</h3>
+          <p class="news-excerpt">
+            Municipal restrictions lead to sell-off despite strong earnings
+            report from Synthetic Arts.
+          </p>
+          <div class="news-meta">
+            <span class="news-time">2 hours ago</span>
+            <span class="news-source">TechPulse</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <script src="dashboard.jsx"></script>
-              <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</body>
+    <!-- Transaction History Section -->
+    <div class="transactions-section">
+      <h2 class="section-title flicker">Recent Activity</h2>
+      <div class="transactions-header">
+        <div class="transactions-filter">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Buys</button>
+          <button class="filter-btn">Sells</button>
+          <button class="filter-btn">Transfers</button>
+        </div>
+        <div class="transactions-search">
+          <input type="text" placeholder="Search transactions..." />
+        </div>
+      </div>
+
+      <div class="transactions-list">
+        <div class="transaction-item buy">
+          <div class="transaction-icon">B</div>
+          <div class="transaction-details">
+            <div class="transaction-stock">CYBR</div>
+            <div class="transaction-type">Buy Order</div>
+          </div>
+          <div class="transaction-meta">
+            <div class="transaction-amount">+50 shares @ 245</div>
+            <div class="transaction-time">10:24 AM</div>
+          </div>
+          <div class="transaction-value positive">12,250 coins</div>
+        </div>
+
+        <div class="transaction-item sell">
+          <div class="transaction-icon">S</div>
+          <div class="transaction-details">
+            <div class="transaction-stock">NOVA</div>
+            <div class="transaction-type">Sell Order</div>
+          </div>
+          <div class="transaction-meta">
+            <div class="transaction-amount">-20 shares @ 178</div>
+            <div class="transaction-time">Yesterday</div>
+          </div>
+          <div class="transaction-value negative">3,560 coins</div>
+        </div>
+
+        <div class="transaction-item bonus">
+          <div class="transaction-icon">+</div>
+          <div class="transaction-details">
+            <div class="transaction-stock">System</div>
+            <div class="transaction-type">Daily Bonus</div>
+          </div>
+          <div class="transaction-meta">
+            <div class="transaction-amount">Daily reward</div>
+            <div class="transaction-time">Yesterday</div>
+          </div>
+          <div class="transaction-value positive">500 coins</div>
+        </div>
+
+        <div class="transaction-item buy">
+          <div class="transaction-icon">B</div>
+          <div class="transaction-details">
+            <div class="transaction-stock">SYNTH</div>
+            <div class="transaction-type">Buy Order</div>
+          </div>
+          <div class="transaction-meta">
+            <div class="transaction-amount">+15 shares @ 312</div>
+            <div class="transaction-time">2 days ago</div>
+          </div>
+          <div class="transaction-value negative">4,680 coins</div>
+        </div>
+      </div>
+
+      <button class="btn view-all">View All Activity</button>
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </body>
 </html>
