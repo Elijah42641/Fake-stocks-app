@@ -1,5 +1,8 @@
+console.log("portfolio.js linked");
+
 async function checkUserSignedIn() {
   try {
+    console.log("checking logged in");
     const response = await axios.post(
       "/api/usersignedin",
       {},
@@ -10,7 +13,7 @@ async function checkUserSignedIn() {
         withCredentials: true,
       }
     );
-    console.log("page run without error");
+    console.log("user is signed in");
     if (response.status === 401) {
       window.location.href = "../signinpage/signin.html";
     }
@@ -24,10 +27,10 @@ async function checkUserSignedIn() {
   }
 }
 
-window.onload = () => {
-  console.log("page loaded");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("portfolio.js loaded");
   checkUserSignedIn();
-};
+});
 
 const ws = new WebSocket("ws://localhost:4000");
 

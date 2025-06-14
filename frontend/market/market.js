@@ -24,10 +24,10 @@ async function checkUserSignedIn() {
   }
 }
 
-window.onload = () => {
+document.addEventListener("DOMContentLoaded", () => {
   console.log("page loaded");
   checkUserSignedIn();
-};
+});
 
 const ws = new WebSocket("ws://localhost:4000");
 
