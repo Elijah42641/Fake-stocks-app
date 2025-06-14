@@ -10,6 +10,20 @@ import { WebSocketServer } from "ws";
 import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
+import multer from "multer";
+
+//to save images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "stock_symbols");
+  },
+  filename: (req, file, cb) => {
+    console.log(file);
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -220,5 +234,69 @@ app.post("/api/usersignedin", async (req, res) => {
       });
     }
     console.error(err);
+  }
+});
+
+//submit stock data
+app.post("/api/addstock", upload.single("stockImage"), async (req, res) => {
+  try {
+    //data to be inserted
+    const {
+      stockName,
+      stockAbbreviation,
+      stockImage,
+      description,
+      initialPrice,
+      username,
+    } = req.body;
+
+    const hasUserReachedStockCreationLimit = await pool.query(
+      `SELECT * FROM otheraccountdata (user_second_stock) WHERE username=$1`,
+      [username]
+    );
+    //check if user has made their second stock
+    if (hasUserReachedStockCreationLimit !== null) {
+      return res.status(429).json({
+        message: "cant create more than two stocks on a single account",
+      });
+    }
+    //check if user made first stock (so code knows which column to insert stock id to)
+    const hasUserMadeFirstStock = await pool.query(
+      `SELECT * FROM otheraccountdata (user_stock1) WHERE username=$1`,
+      [username]
+    );
+    //file name so we know know which file in the images folder its in
+    const fileName = req.file.filename;
+    //make a random stock id so we can find the stock from another table
+    const randomStockId = Math.floor(Math.random() * 100000000000000);
+
+    //inserts into first stock id column if user hasnt made a stock yet
+    if (hasUserMadeFirstStock == null) {
+      const response = await pool.query(
+        `UPDATE otheraccountdata SET user_stock1 = $1 WHERE username=$2`,
+        [randomStockId, username]
+      );
+      //if user already made a stock inserts into second stock id column
+    } else {
+      const response = await pool.query(
+        `UPDATE otheraccountdata SET user_stock2 = $1 WHERE username=$2`,
+        [randomStockId, username]
+      );
+    }
+    //now we can refer to the stocks in the stocks table from this table
+    //lets now insert the info about the stock in the stocks table
+    const insertStockData = await pool.query(
+      `INSERT INTO stocks (stock_id, stock_name, stock_abbreviation, stock_img_file_name, stock_description, price) VALUES ($1,$2,$3,$4,$5,%6)`,
+      [
+        randomStockId,
+        stockName,
+        stockAbbreviation,
+        fileName,
+        description,
+        initialPrice,
+      ]
+    );
+  } catch (error) {
+    console.error(error);
   }
 });

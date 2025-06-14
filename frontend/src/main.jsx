@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import { createRoot } from "react-dom/client";
 
+import axios from "axios";
+
 function StockPrompt({ isOpen, onClose, onSubmit }) {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -29,26 +31,46 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("symbol", symbol);
-    formData.append("description", description);
-    formData.append("price", price);
+    formData.append("stockName", name);
+    formData.append("stockAbbreviation", symbol);
+    formData.append("stockDescription", description);
+    formData.append("initialPrice", price);
 
     // Get file from input ref
     if (fileInputRef.current.files[0]) {
-      formData.append("tickerImage", fileInputRef.current.files[0]);
+      formData.append("stockImage", fileInputRef.current.files[0]);
     }
 
-    onSubmit(formData);
-    onClose();
+    try {
+      console.log("frontend calling api");
+      const response = await axios.post(
+        "/api/addstock",
+        formData, // Send FormData directly
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important for file upload
+          },
+          withCredentials: true,
+        }
+      );
+
+      onSubmit(formData); // Call parent onSubmit
+      onClose(); // Close the prompt
+    } catch (error) {
+      if (error.response && error.response.status === 429) {
+        window.alert("You can only have two stocks on an account");
+      } else {
+        console.error("Error submitting stock:", error);
+      }
+    }
   };
 
   const handleRemoveImage = () => {
     setPreviewImage("");
-    fileInputRef.current.value = ""; // Proper way to clear file input
+    fileInputRef.current.value = ""; // Clear file input
   };
 
   if (!isOpen) return null;
@@ -63,7 +85,7 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="input-group">
             <label className="neon-label">STOCK NAME</label>
             <input
@@ -91,9 +113,14 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
 
           <div className="input-group">
             <label className="neon-label">STOCK SYMBOL IMAGE</label>
-            <p className="file-instructions">
-              Please upload a .png, .jpg, or .jpeg file (max 2MB)
-            </p>
+            {previewImage && (
+              <div className="image-preview">
+                <img src={previewImage} alt="Preview" />
+                <button type="button" onClick={handleRemoveImage}>
+                  Remove
+                </button>
+              </div>
+            )}
             <input
               type="file"
               accept=".png,.jpg,.jpeg"
@@ -102,28 +129,9 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
               required
               ref={fileInputRef}
             />
-            {previewImage && (
-              <div className="image-preview">
-                <img
-                  src={previewImage}
-                  alt="Ticker preview"
-                  style={{
-                    maxWidth: "100px",
-                    maxHeight: "100px",
-                    marginTop: "10px",
-                    border: "1px solid var(--neon-blue)",
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="cyberpunk-btn cancel"
-                  style={{ marginTop: "5px" }}
-                >
-                  Remove Image
-                </button>
-              </div>
-            )}
+            <p className="file-instructions">
+              Please upload a .png, .jpg, or .jpeg file (max 2MB)
+            </p>
           </div>
 
           <div className="input-group">
@@ -402,6 +410,7 @@ function HTMLforReact() {
 document.addEventListener("DOMContentLoaded", () => {
   const rootElement = document.getElementById("root");
   if (rootElement) {
+    console.log("dom loaded");
     const root = createRoot(rootElement);
     root.render(<HTMLforReact />);
   } else {
