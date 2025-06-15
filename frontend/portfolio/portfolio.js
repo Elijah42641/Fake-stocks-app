@@ -4,7 +4,7 @@ async function checkUserSignedIn() {
   try {
     console.log("checking logged in");
     const response = await axios.post(
-      "localhost:4000/api/usersignedin",
+      "http://localhost:4000/api/usersignedin",
       {},
       {
         headers: {
@@ -18,7 +18,7 @@ async function checkUserSignedIn() {
       window.location.href = "../signinpage/signin.html";
     }
   } catch (error) {
-    if (error.response.status === 401) {
+    if (error.response === 401) {
       console.log("redirect");
       window.location.href = "../signinpage/signin.html";
     } else {
