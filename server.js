@@ -251,30 +251,40 @@ app.post(
     }
     next();
   },
-  upload.single("stockImage"),
+
+  async () => {
+    let insertImage = true;
+    // 1. Check if user already has a stock
+    const userStockCheck = await pool.query(
+      `SELECT user_stock1 FROM otheraccountdata WHERE username = $1`,
+      [req.username.username]
+    );
+
+    // 2. Proper null/undefined check
+    if (
+      userStockCheck.rows.length > 0 &&
+      userStockCheck.rows[0].user_stock1 !== null
+    ) {
+      insertImage = false;
+      return res.status(429).json({
+        message: "Can't create more than one stock on a single account",
+      });
+    }
+
+    const fileFilter = (req, file, cb) => {
+      if (insertImage == true) {
+        cb(null, true); // Accept the file
+      } else {
+        cb(false); // Reject the file
+      }
+    };
+  },
+
   async (req, res) => {
     try {
       const { stockName, stockAbbreviation, description, initialPrice } =
         req.body;
 
-      // 1. Check if user already has a stock
-      const userStockCheck = await pool.query(
-        `SELECT user_stock1 FROM otheraccountdata WHERE username = $1`,
-        [req.username.username]
-      );
-
-      // 2. Proper null/undefined check
-      if (
-        userStockCheck.rows.length > 0 &&
-        userStockCheck.rows[0].user_stock1 !== null
-      ) {
-        return res.status(429).json({
-          message: "Can't create more than one stock on a single account",
-        });
-      }
-
-      // 3. Generate random ID and process file
-      const fileName = req.file.filename;
       const randomStockId = Math.floor(Math.random() * 100000000000000);
 
       // 4. Update user's stock reference
@@ -321,7 +331,6 @@ app.post(
       );
 
       //create folder for the new stock's section of the app:
-
       //make the folder to hold the files
       fs.mkdirSync(path.join(__dirname, "frontend", randomStockId.toString()));
 
@@ -358,10 +367,14 @@ app.post(
         ``
       );
 
+      // 3. Generate random ID and process file
+      const fileName = req.file.filename;
+
       console.log("stock created");
       res.status(200).json({ message: "Stock created successfully" });
     } catch (error) {
       console.error("Error in /api/addstock:", error);
     }
-  }
+  },
+  upload.single("stockImage")
 );
