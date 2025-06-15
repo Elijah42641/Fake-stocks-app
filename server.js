@@ -252,7 +252,7 @@ app.post(
     next();
   },
 
-  async () => {
+  async (req, res) => {
     let insertImage = true;
     // 1. Check if user already has a stock
     const userStockCheck = await pool.query(
