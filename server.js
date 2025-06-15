@@ -241,87 +241,79 @@ app.post("/api/usersignedin", async (req, res) => {
 //submit stock data
 app.post(
   "/api/addstock",
-  upload.single("stockImage"),
-  async (req, res, next) => {
-    //define username before parsing stuff messes it up
-    req.username = req.session.user;
 
-    console.log(req.username.username);
-    if (req.username.length <= 0) {
-      return res.status(401).json({ message: "session expired, refresh page" });
+  // Middleware 1: session & user check
+  (req, res, next) => {
+    if (!req.session || !req.session.user) {
+      return res
+        .status(401)
+        .json({ message: "Session expired, please login again" });
     }
+    req.username = req.session.user.username;
     next();
   },
 
-  async (req, res) => {
-    let insertImage = true;
-    // 1. Check if user already has a stock
-    const userStockCheck = await pool.query(
-      `SELECT user_stock1 FROM otheraccountdata WHERE username = $1`,
-      [req.username.username]
-    );
+  // Middleware 2: check if user can add stock, set req.canUpload accordingly
+  async (req, res, next) => {
+    try {
+      const result = await pool.query(
+        "SELECT user_stock1 FROM otheraccountdata WHERE username = $1",
+        [req.username]
+      );
 
-    // 2. Proper null/undefined check
-    if (
-      userStockCheck.rows.length > 0 &&
-      userStockCheck.rows[0].user_stock1 !== null
-    ) {
-      insertImage = false;
-      return res.status(429).json({
-        message: "Can't create more than one stock on a single account",
-      });
-    }
-
-    const fileFilter = (req, file, cb) => {
-      if (insertImage == true) {
-        cb(null, true); // Accept the file
-      } else {
-        cb(false); // Reject the file
+      if (result.rows.length > 0 && result.rows[0].user_stock1 !== null) {
+        req.canUpload = false;
+        return res.status(429).json({
+          message: "Can't create more than one stock on a single account",
+        });
       }
-    };
+      req.canUpload = true;
+      next();
+    } catch (err) {
+      console.error("DB error checking stock:", err);
+      res.status(500).json({ message: "Database error" });
+    }
   },
 
+  // Middleware 3: multer upload (runs only if req.canUpload is true)
+  (req, res, next) => {
+    upload.single("stockImage")(req, res, function (err) {
+      if (err) {
+        console.error("Upload error:", err.message);
+        return res.status(400).json({ message: err.message });
+      }
+      next();
+    });
+  },
+
+  // Middleware 4: main handler that inserts stock and creates files
   async (req, res) => {
     try {
       const { stockName, stockAbbreviation, description, initialPrice } =
         req.body;
 
-      const randomStockId = Math.floor(Math.random() * 100000000000000);
+      if (!stockName || !stockAbbreviation || !initialPrice) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
 
-      // 4. Update user's stock reference
+      // Generate random stock ID
+      const randomStockId = Math.floor(Math.random() * 1e14);
+
+      // Update user's stock reference
       await pool.query(
-        `UPDATE otheraccountdata SET user_stock1 = $1 WHERE username = $2`,
-        [randomStockId, req.username.username]
+        "UPDATE otheraccountdata SET user_stock1 = $1 WHERE username = $2",
+        [randomStockId, req.username]
       );
 
-      //names of the files to be inserted
-      function generateRandomString(length) {
-        const array = new Uint8Array(length);
-        crypto.getRandomValues(array);
-        let result = "";
-        for (let i = 0; i < array.length; i++) {
-          result += String.fromCharCode((array[i] % 26) + 97);
-        }
-        return result;
-      }
-      function generateRandomStringgg(length) {
-        const array = new Uint8Array(length);
-        crypto.getRandomValues(array);
-        let result = "";
-        for (let i = 0; i < array.length; i++) {
-          result += String.fromCharCode((array[i] % 26) + 97);
-        }
-        return result;
-      }
-
-      const randomHTMLFileName = generateRandomString() + "stock.html";
-      const randomReactFileName = generateRandomStringgg() + "stock.jsx";
+      const randomHTMLFileName = "stock.html";
+      const randomReactFileName = "stock.jsx";
 
       const fileName = req.file.filename;
 
+      // Insert stock data
       await pool.query(
         `INSERT INTO stocks (stock_id, stock_name, stock_abbreviation, stock_img_file_name, stock_description, price, html_file_name) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
           randomStockId,
           stockName,
@@ -333,47 +325,39 @@ app.post(
         ]
       );
 
-      //create folder for the new stock's section of the app:
-      //make the folder to hold the files
-      fs.mkdirSync(path.join(__dirname, "frontend", randomStockId.toString()));
+      // Create folder for the new stock
+      const stockFolder = path.join(
+        __dirname,
+        "frontend",
+        randomStockId.toString()
+      );
+      if (!fs.existsSync(stockFolder)) {
+        fs.mkdirSync(stockFolder);
+      }
 
-      //html file with the random name:
-      fs.writeFileSync(
-        path.join(
-          __dirname,
-          "frontend",
-          randomStockId.toString(),
-          randomHTMLFileName.toString()
-        ),
-        `<!DOCTYPE html>
+      // Write HTML file
+      const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${stockName}</title>
 </head>
 <body>
-    
-<script type="module" src=${randomReactFileName}></script>
+<script type="module" src="${randomReactFileName}"></script>
 </body>
-</html>`
-      );
+</html>`;
 
-      //react file with the random name
-      fs.writeFileSync(
-        path.join(
-          __dirname,
-          "frontend",
-          randomStockId.toString(),
-          randomReactFileName.toString()
-        ),
-        ``
-      );
+      fs.writeFileSync(path.join(stockFolder, randomHTMLFileName), htmlContent);
 
-      console.log("stock created");
+      // Write empty React file
+      fs.writeFileSync(path.join(stockFolder, randomReactFileName), "");
+
+      console.log("Stock created successfully");
       res.status(200).json({ message: "Stock created successfully" });
     } catch (error) {
       console.error("Error in /api/addstock:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 );
