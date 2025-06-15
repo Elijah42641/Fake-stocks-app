@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  root: "./frontend", // ✅ This tells Vite to treat "frontend" as the root
   plugins: [react()],
   server: {
     port: 5173,
@@ -20,12 +19,10 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../dist", // ✅ Output goes outside frontend (into project root)
+    outDir: "../dist", // puts build output outside the frontend folder
     emptyOutDir: true,
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "frontend/index.html"),
-      },
+      input: {},
       output: {
         entryFileNames: "assets/[name]-[hash].js",
         chunkFileNames: "assets/[name]-[hash].js",

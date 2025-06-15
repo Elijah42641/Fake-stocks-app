@@ -47,7 +47,7 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
     try {
       console.log("frontend calling api");
       const response = await axios.post(
-        "/api/addstock",
+        "localhost:4000/api/addstock",
         formData, // Send FormData directly
         {
           headers: {

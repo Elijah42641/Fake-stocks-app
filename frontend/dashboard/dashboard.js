@@ -1,7 +1,7 @@
 async function checkUserSignedIn() {
   try {
     const response = await axios.post(
-      "/api/usersignedin",
+      "localhost:4000/api/usersignedin",
       {},
       {
         headers: {
