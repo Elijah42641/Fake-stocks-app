@@ -21,5 +21,16 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: "./index.html",
+        dynamic: "./src/dynamic/**/*.jsx", // Glob pattern for nested files
+      },
+      output: {
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
+      },
+    },
   },
 });

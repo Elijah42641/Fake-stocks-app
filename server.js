@@ -11,6 +11,7 @@ import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
+import fs from "fs";
 
 //to save images
 const storage = multer.diskStorage({
@@ -238,65 +239,129 @@ app.post("/api/usersignedin", async (req, res) => {
 });
 
 //submit stock data
-app.post("/api/addstock", upload.single("stockImage"), async (req, res) => {
-  try {
-    //data to be inserted
-    const {
-      stockName,
-      stockAbbreviation,
-      stockImage,
-      description,
-      initialPrice,
-      username,
-    } = req.body;
+app.post(
+  "/api/addstock",
+  async (req, res, next) => {
+    //define username before parsing stuff messes it up
+    req.username = req.session.user;
 
-    const hasUserReachedStockCreationLimit = await pool.query(
-      `SELECT * FROM otheraccountdata (user_second_stock) WHERE username=$1`,
-      [username]
-    );
-    //check if user has made their second stock
-    if (hasUserReachedStockCreationLimit !== null) {
-      return res.status(429).json({
-        message: "cant create more than two stocks on a single account",
-      });
+    console.log(req.username.username);
+    if (req.username.length <= 0) {
+      return res.status(401).json({ message: "session expired, refresh page" });
     }
-    //check if user made first stock (so code knows which column to insert stock id to)
-    const hasUserMadeFirstStock = await pool.query(
-      `SELECT * FROM otheraccountdata (user_stock1) WHERE username=$1`,
-      [username]
-    );
-    //file name so we know know which file in the images folder its in
-    const fileName = req.file.filename;
-    //make a random stock id so we can find the stock from another table
-    const randomStockId = Math.floor(Math.random() * 100000000000000);
+    next();
+  },
+  upload.single("stockImage"),
+  async (req, res) => {
+    try {
+      const { stockName, stockAbbreviation, description, initialPrice } =
+        req.body;
 
-    //inserts into first stock id column if user hasnt made a stock yet
-    if (hasUserMadeFirstStock == null) {
-      const response = await pool.query(
-        `UPDATE otheraccountdata SET user_stock1 = $1 WHERE username=$2`,
-        [randomStockId, username]
+      // 1. Check if user already has a stock
+      const userStockCheck = await pool.query(
+        `SELECT user_stock1 FROM otheraccountdata WHERE username = $1`,
+        [req.username.username]
       );
-      //if user already made a stock inserts into second stock id column
-    } else {
-      const response = await pool.query(
-        `UPDATE otheraccountdata SET user_stock2 = $1 WHERE username=$2`,
-        [randomStockId, username]
+
+      // 2. Proper null/undefined check
+      if (
+        userStockCheck.rows.length > 0 &&
+        userStockCheck.rows[0].user_stock1 !== null
+      ) {
+        return res.status(429).json({
+          message: "Can't create more than one stock on a single account",
+        });
+      }
+
+      // 3. Generate random ID and process file
+      const fileName = req.file.filename;
+      const randomStockId = Math.floor(Math.random() * 100000000000000);
+
+      // 4. Update user's stock reference
+      await pool.query(
+        `UPDATE otheraccountdata SET user_stock1 = $1 WHERE username = $2`,
+        [randomStockId, req.username.username]
       );
+
+      //names of the files to be inserted
+      function generateRandomString(length) {
+        const array = new Uint8Array(length);
+        crypto.getRandomValues(array);
+        let result = "";
+        for (let i = 0; i < array.length; i++) {
+          result += String.fromCharCode((array[i] % 26) + 97);
+        }
+        return result;
+      }
+      function generateRandomStringgg(length) {
+        const array = new Uint8Array(length);
+        crypto.getRandomValues(array);
+        let result = "";
+        for (let i = 0; i < array.length; i++) {
+          result += String.fromCharCode((array[i] % 26) + 97);
+        }
+        return result;
+      }
+
+      const randomHTMLFileName = generateRandomString() + "stock.html";
+      const randomReactFileName = generateRandomStringgg() + "stock.jsx";
+
+      await pool.query(
+        `INSERT INTO stocks (stock_id, stock_name, stock_abbreviation, stock_img_file_name, stock_description, price, html_file_name) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          randomStockId,
+          stockName,
+          stockAbbreviation,
+          fileName,
+          description,
+          initialPrice,
+          randomHTMLFileName,
+        ]
+      );
+
+      //create folder for the new stock's section of the app:
+
+      //make the folder to hold the files
+      fs.mkdirSync(path.join(__dirname, "frontend", randomStockId.toString()));
+
+      //html file with the random name:
+      fs.writeFileSync(
+        path.join(
+          __dirname,
+          "frontend",
+          randomStockId.toString(),
+          randomHTMLFileName.toString()
+        ),
+        `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script type="module" src=${randomReactFileName}></script>
+</body>
+</html>`
+      );
+
+      //react file with the random name
+      fs.writeFileSync(
+        path.join(
+          __dirname,
+          "frontend",
+          randomStockId.toString(),
+          randomReactFileName.toString()
+        ),
+        ``
+      );
+
+      console.log("stock created");
+      res.status(200).json({ message: "Stock created successfully" });
+    } catch (error) {
+      console.error("Error in /api/addstock:", error);
     }
-    //now we can refer to the stocks in the stocks table from this table
-    //lets now insert the info about the stock in the stocks table
-    const insertStockData = await pool.query(
-      `INSERT INTO stocks (stock_id, stock_name, stock_abbreviation, stock_img_file_name, stock_description, price) VALUES ($1,$2,$3,$4,$5,%6)`,
-      [
-        randomStockId,
-        stockName,
-        stockAbbreviation,
-        fileName,
-        description,
-        initialPrice,
-      ]
-    );
-  } catch (error) {
-    console.error(error);
   }
-});
+);

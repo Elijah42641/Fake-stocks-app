@@ -36,7 +36,7 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
     const formData = new FormData();
     formData.append("stockName", name);
     formData.append("stockAbbreviation", symbol);
-    formData.append("stockDescription", description);
+    formData.append("description", description);
     formData.append("initialPrice", price);
 
     // Get file from input ref
@@ -56,6 +56,10 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
           withCredentials: true,
         }
       );
+
+      if (response.status === 200) {
+        window.alert("Stock created!");
+      }
 
       onSubmit(formData); // Call parent onSubmit
       onClose(); // Close the prompt
@@ -136,7 +140,7 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
 
           <div className="input-group">
             <label className="neon-label">DESCRIPTION</label>
-            <textarea
+            <input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="cyberpunk-textarea"
