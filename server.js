@@ -241,6 +241,7 @@ app.post("/api/usersignedin", async (req, res) => {
 //submit stock data
 app.post(
   "/api/addstock",
+  upload.single("stockImage"),
   async (req, res, next) => {
     //define username before parsing stuff messes it up
     req.username = req.session.user;
@@ -316,6 +317,8 @@ app.post(
       const randomHTMLFileName = generateRandomString() + "stock.html";
       const randomReactFileName = generateRandomStringgg() + "stock.jsx";
 
+      const fileName = req.file.filename;
+
       await pool.query(
         `INSERT INTO stocks (stock_id, stock_name, stock_abbreviation, stock_img_file_name, stock_description, price, html_file_name) 
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
@@ -367,14 +370,10 @@ app.post(
         ``
       );
 
-      // 3. Generate random ID and process file
-      const fileName = req.file.filename;
-
       console.log("stock created");
       res.status(200).json({ message: "Stock created successfully" });
     } catch (error) {
       console.error("Error in /api/addstock:", error);
     }
-  },
-  upload.single("stockImage")
+  }
 );
