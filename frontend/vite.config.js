@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+  root: "./frontend", // ✅ This tells Vite to treat "frontend" as the root
   plugins: [react()],
   server: {
     port: 5173,
@@ -19,12 +20,11 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "dist",
+    outDir: "../dist", // ✅ Output goes outside frontend (into project root)
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: "./index.html",
-        dynamic: "./src/dynamic/**/*.jsx", // Glob pattern for nested files
+        main: path.resolve(__dirname, "frontend/index.html"),
       },
       output: {
         entryFileNames: "assets/[name]-[hash].js",
