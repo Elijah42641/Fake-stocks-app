@@ -65,7 +65,7 @@ function StockPrompt({ isOpen, onClose, onSubmit }) {
       onClose(); // Close the prompt
     } catch (error) {
       if (error.response && error.response.status === 429) {
-        window.alert("You can only have two stocks on an account");
+        window.alert("You can only have one stock on an account");
       } else {
         console.error("Error submitting stock:", error);
       }
