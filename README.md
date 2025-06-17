@@ -2,3 +2,4 @@ Main idea: .create fake stocks .buy fake stocks with fake money .as in real life
 <br>
 roadmap: <br>
 write the html and react that is created when files are generated for the add stock feature (already have the html automatically linking to the react file)
+<br> make a table when a stock is created to hold candlesticks
