@@ -25,7 +25,9 @@ const data = {
 
 //make a function that adds a new candle based on the time period and stops updating the last candle when new candle is created
 //when you get that start saving the candles for specific time periods to the db
+let timeFrame = 60,000; //one minute by default
 
+//returns price of stock
 async function getCurrentPrice() {
   try {
     const response = await axios.post(
@@ -53,6 +55,7 @@ async function getCurrentPrice() {
   }
 }
 
+//return how many candles on chart
 async function getCandlesOnChart() {
   try {
     const response = await axios.post(
@@ -80,9 +83,12 @@ async function getCandlesOnChart() {
   }
 }
 
+//sets variable to the price of stock
 let currentPriceForUserStock = getCurrentPrice();
+//sets variabpe to candles on chart
 let candlesOnChart = getCandlesOnChart();
 
+//pushes a candle to chart data
 function addUpdatingCandle() {
   const candle = {
     x: Date.now(),
@@ -97,6 +103,7 @@ function addUpdatingCandle() {
   myChart.update();
 }
 
+//updates the last candle that was added (run when bought or sold)
 function updateOnBuyOrSell() {
   currentPriceForUserStock = getCurrentPrice();
   if (
@@ -128,7 +135,7 @@ function updateOnBuyOrSell() {
   }
 } //run this function when user buys or sells a stock
 
-if (candlesOnChart == false) {
+if (candlesOnChart === 0) {
   addUpdatingCandle();
 }
 
