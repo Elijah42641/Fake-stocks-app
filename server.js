@@ -238,6 +238,9 @@ app.post("/api/usersignedin", async (req, res) => {
   }
 });
 
+//create a variable that will be exported then imported to react file so it can get the price of the stock and other stuff
+let idForStock = "";
+
 //submit stock data
 app.post(
   "/api/addstock",
@@ -298,6 +301,8 @@ app.post(
 
       // Generate random stock ID
       const randomStockId = Math.floor(Math.random() * 1e14);
+      req.user.idOfStock;
+      idForStock = randomStockId;
 
       // Update user's stock reference
       await pool.query(
@@ -335,23 +340,26 @@ app.post(
         fs.mkdirSync(stockFolder);
       }
 
-      // Write HTML file
-      const htmlContent = `<!DOCTYPE html>
+      fs.writeFileSync(
+        path.join(stockFolder, randomHTMLFileName),
+        `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${stockName}</title>
+<link rel="stylesheet" href="stock.css">
 </head>
 <body>
 <script type="module" src="${randomReactFileName}"></script>
 </body>
-</html>`;
-
-      fs.writeFileSync(path.join(stockFolder, randomHTMLFileName), htmlContent);
+</html>`
+      );
 
       // Write empty React file
-      fs.writeFileSync(path.join(stockFolder, randomReactFileName), "");
+      fs.writeFileSync(path.join(stockFolder, randomReactFileName), ``);
+
+      fs.writeFileSync(path.join(stockFolder, "stock.css"), ``);
 
       console.log("Stock created successfully");
       res.status(200).json({ message: "Stock created successfully" });
@@ -361,3 +369,35 @@ app.post(
     }
   }
 );
+
+export const theStockId = idForStock;
+
+app.post("checkStockPrice", async (req, res) => {
+  try {
+    const idkMoreVariablesICanAssignToStockId = req.session.idOfStock;
+    const price = pool.query(
+      `SELECT price FROM stocks WHERE stock_id = ${idkMoreVariablesICanAssignToStockId}`
+    );
+
+    return res.json({
+      price: price,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.post("checkCandlestickAmount", async (req, res) => {
+  try {
+    const idkMoreVariablesICanAssignToStockId123 = req.session.idOfStock;
+    const candleSticksOnChart = pool.query(
+      `SELECT candles_on_chart FROM stocks WHERE stock_id = ${idkMoreVariablesICanAssignToStockId123}`
+    );
+
+    return res.json({
+      candlestickAmount: candleSticksOnChart,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});

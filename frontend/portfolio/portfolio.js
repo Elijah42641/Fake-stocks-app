@@ -18,7 +18,7 @@ async function checkUserSignedIn() {
       window.location.href = "../signinpage/signin.html";
     }
   } catch (error) {
-    if (error.response === 401) {
+    if (error.response && error.response.status === 401) {
       console.log("redirect");
       window.location.href = "../signinpage/signin.html";
     } else {
