@@ -23,9 +23,10 @@ const data = {
   ],
 };
 
-//display candles when you switch between time frames
-//start having the user trades actually effect the candles
+//make a function that adds a new candle based on the time period and stops updating the last candle when new candle is created
+//when you get that start saving the candles for specific time periods to the db
 
+//returns price of stock
 async function getCurrentPrice() {
   try {
     const response = await axios.post(
@@ -53,6 +54,7 @@ async function getCurrentPrice() {
   }
 }
 
+//return how many candles on chart
 async function getCandlesOnChart() {
   try {
     const response = await axios.post(
@@ -80,49 +82,10 @@ async function getCandlesOnChart() {
   }
 }
 
-let currentPriceForUserStock = await getCurrentPrice();
-let candlesOnChart = await getCandlesOnChart();
+let currentPriceForUserStock = getCurrentPrice();
+let candlesOnChart = getCandlesOnChart();
 
-async function addCandleToDatabase(
-  timeFrame,
-  openTime,
-  openPrice,
-  highPrice,
-  lowPrice,
-  closingPrice,
-  candleCreatedAt
-) {
-  try {
-    const response = await axios.post(
-      "http://localhost:4000/api/addCandleStickToDb",
-      {
-        timeFrame,
-        openTime,
-        openPrice,
-        highPrice,
-        lowPrice,
-        closingPrice,
-        candleCreatedAt,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      console.log("redirect");
-      window.location.href = "../signinpage/signin.html";
-    } else {
-      console.error(error);
-    }
-  }
-}
-
-//generates candles for time frame given
-function generateCandlesForTimeFrame(timeFrame) {
+function addUpdatingCandle() {
   const candle = {
     x: Date.now(),
     o: currentPriceForUserStock,
@@ -152,8 +115,8 @@ function generateCandlesForTimeFrame(timeFrame) {
   myChart.update();
 }
 
-async function updateOnBuyOrSell() {
-  currentPriceForUserStock = await getCurrentPrice();
+function updateOnBuyOrSell() {
+  currentPriceForUserStock = getCurrentPrice();
   if (
     currentPriceForUserStock >
     data.datasets[0].data[data.datasets[0].data.length - 1].h
@@ -185,17 +148,8 @@ async function updateOnBuyOrSell() {
   }
 } //run this function when user buys or sells a stock
 
-//iterates through an array of time frames and runs a looping function to constantly add new candlesticks
-async function generateCandlesForEACHtimeFrame() {
-  //one minute, five minutes, 20 mintues, one hour, three hours, one day, one week
-  const timeFrames = [60000, 300000, 1.2e6, 3.6e6, 1.08e7, 8.64e7, 6.048e8];
-
-  timeFrames.forEach((frame) => generateCandlesForTimeFrame(frame));
-}
-
-//if there are no candles then it goes to that function
-if (!candles) {
-  generateCandlesForEACHtimeFrame();
+if (candlesOnChart == false) {
+  addUpdatingCandle();
 }
 
 // config
