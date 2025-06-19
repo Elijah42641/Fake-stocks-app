@@ -375,7 +375,7 @@ export const theStockId = idForStock;
 app.post("/api/checkStockPrice", async (req, res) => {
   try {
     const idkMoreVariablesICanAssignToStockId = req.session.idOfStock;
-    const price = pool.query(
+    const price = await pool.query(
       `SELECT price FROM stocks WHERE stock_id = ${idkMoreVariablesICanAssignToStockId}`
     );
 
@@ -390,7 +390,7 @@ app.post("/api/checkStockPrice", async (req, res) => {
 app.post("/api/checkCandlestickAmount", async (req, res) => {
   try {
     const idkMoreVariablesICanAssignToStockId123 = req.session.idOfStock;
-    const candleSticksOnChart = pool.query(
+    const candleSticksOnChart = await pool.query(
       `SELECT candles_on_chart FROM stocks WHERE stock_id = ${idkMoreVariablesICanAssignToStockId123}`
     );
 
@@ -431,6 +431,27 @@ app.post("/api/addCandleStickToDb", async (req, res) => {
         candleCreatedAt,
       ]
     );
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.post("/api/retrieveCandlesForFrame", async (req, res) => {
+  try {
+    const { frameSwitchedTo } = req.body;
+    const idkMoreVariablesICanAssignToStockId1235545454545 =
+      req.session.idOfStock;
+    const candlesticksForTimeFrame = await pool.query(
+      `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+      [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+    );
+
+    return res.json({
+      candlesticks: candlesticksForTimeFrame,
+    });
   } catch (error) {
     console.error(error);
   }
