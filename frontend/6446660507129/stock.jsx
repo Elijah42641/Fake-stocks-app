@@ -23,8 +23,6 @@ const data = {
   ],
 };
 
-//add a button in html to trigger the display of different time frames
-//set maximumm amount of candles on each chart to be 200 (when adding a candle to db check if the amount of candles is = to the max then remove the earliest ome)
 //start having the user trades actually affect the candles
 
 //returns candlesticks in an array
@@ -59,9 +57,9 @@ async function candlesticksForTimeFrame(frameSwitchedTo) {
 }
 
 //call this and pass the time frame when a user switches between frames
-async function displayTimeFrameCandlesticks() {
+async function displayTimeFrameCandlesticks(framePassed) {
   try {
-    const arrayOfCandles = candlesticksForTimeFrame();
+    const arrayOfCandles = candlesticksForTimeFrame(framePassed);
     data.datasets[0].data.length = 0;
     arrayOfCandles.forEach((candleInFrame) =>
       data.datasets[0].data.push(candleInFrame)
@@ -70,6 +68,35 @@ async function displayTimeFrameCandlesticks() {
     console.error(error);
   }
 }
+
+//add event listeners to buttons to display data when they're clicked
+document.getElementById("oneMinute").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(60000);
+});
+
+document.getElementById("fiveMinutes").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(300000);
+});
+
+document.getElementById("twentyMinutes").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(1.2e6);
+});
+
+document.getElementById("oneHour").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(3.6e6);
+});
+
+document.getElementById("threeHours").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(1.08e7);
+});
+
+document.getElementById("oneDay").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(8.64e7);
+});
+
+document.getElementById("oneWeek").addEventListener("click", () => {
+  displayTimeFrameCandlesticks(6.048e8);
+});
 
 async function getCurrentPrice() {
   try {
@@ -128,6 +155,7 @@ async function getCandlesOnChart() {
 let currentPriceForUserStock = await getCurrentPrice();
 let candlesOnChart = await getCandlesOnChart();
 
+//adds to database as the function says
 async function addCandleToDatabase(
   timeFrame,
   openTime,

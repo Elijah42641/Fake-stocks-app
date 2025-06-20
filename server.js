@@ -449,6 +449,163 @@ ORDER BY open_time ASC;`,
       [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
     );
 
+    //makes an else if statement to see if the amount of candles for the stock has reached the max amount of candles and clears the oldest
+    if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 600 &&
+      frameSwitchedTo === 60000
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    } else if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 550 &&
+      frameSwitchedTo === 300000
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    } else if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 500 &&
+      frameSwitchedTo === 1.2e6
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    } else if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 500 &&
+      frameSwitchedTo === 3.6e6
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    } else if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 450 &&
+      frameSwitchedTo === 1.08e7
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    } else if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 400 &&
+      frameSwitchedTo === 8.64e7
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    } else if (
+      candlesticksForTimeFrameBeforeClearingOlderCandles >= 400 &&
+      frameSwitchedTo === 6.048e8
+    ) {
+      await pool.query(
+        `DELETE FROM candlesticks
+         WHERE id = (
+           SELECT id FROM candlesticks
+           WHERE stock_id = $1 AND timeframe = $2
+           ORDER BY open_time ASC
+           LIMIT 1
+         )`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+
+      candlesticksForTimeFrame = await pool.query(
+        `SELECT *
+FROM candlesticks
+WHERE stock_id = $1 AND timeframe = $2
+ORDER BY open_time ASC;`,
+        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
+      );
+    }
+
     return res.json({
       candlesticks: candlesticksForTimeFrame,
     });
