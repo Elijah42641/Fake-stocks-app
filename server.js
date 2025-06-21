@@ -613,3 +613,18 @@ ORDER BY open_time ASC;`,
     console.error(error);
   }
 });
+
+app.post("/api/checkSharesAvailable", async (req, res) => {
+  try {
+    const idkMoreVariablesICanAssignToStockId935772345 = req.session.idOfStock;
+    const shares = await pool.query(
+      `SELECT shares_available FROM stocks WHERE stock_id = ${idkMoreVariablesICanAssignToStockId935772345}`
+    );
+
+    return res.json({
+      price: shares,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});

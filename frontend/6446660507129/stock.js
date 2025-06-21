@@ -23,8 +23,6 @@ const data = {
   ],
 };
 
-//start having the user trades actually affect the candles
-
 //returns candlesticks in an array
 async function candlesticksForTimeFrame(frameSwitchedTo) {
   try {
@@ -265,6 +263,54 @@ async function generateCandlesForEACHtimeFrame() {
 //if there are no candles then it goes to that function
 if (!candles) {
   generateCandlesForEACHtimeFrame();
+}
+
+let sharesAvailable;
+
+async function getSharesAvailable() {
+  try {
+    const response = await axios.post(
+      "http://localhost:4000/api/checkSharesAvailable",
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    return response.shares;
+
+    if (response.status === 401) {
+      window.location.href = "../signinpage/signin.html";
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.log("redirect");
+      window.location.href = "../signinpage/signin.html";
+    } else {
+      console.error(error);
+    }
+  }
+}
+
+//add function to change the price of stock based on the percent of shares available
+
+async function changePriceOnUserTrade(currencySpent, currencyWasBought) {
+  try {
+    const sharesBoughtOrSold = currencySpent / currentPriceForUserStock;
+    sharesAvailable = getSharesAvailable();
+    const percentChangedBy =
+      Math.round((sharesBoughtOrSold / sharesAvailable) * 0.05 * 100) / 100;
+
+    if (currencyWasBought == true) {
+      changePriceByPercentChangedBy(percentChangedBy);
+    } else if (currencyWasBought == false) {
+      changePriceByPercentChangedBy(-percentChangedBy);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // config
