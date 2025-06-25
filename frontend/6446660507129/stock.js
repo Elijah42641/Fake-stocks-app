@@ -1,5 +1,5 @@
 // setup
-import { theStockId } from "../../server";
+import { theStockId } from "../../server.js";
 import { Chart, TimeScale, LinearScale, Tooltip, Legend } from "chart.js";
 import {
   CandlestickController,
@@ -60,7 +60,7 @@ async function updateOnBuyOrSell() {
 
 //displays the new stock price every second if at least one trade is made
 function needAFunctionNameForThisSoItCanCallItself() {
-  if ((userTradeWithinCurrentSecond = true)) {
+  if (userTradeWithinCurrentSecond == true) {
     updateOnBuyOrSell();
     userTradeWithinCurrentSecond = false;
     setTimeout(needAFunctionNameForThisSoItCanCallItself, 1000);
@@ -153,10 +153,6 @@ async function getCurrentPrice() {
       }
     );
     return response.price;
-
-    if (response.status === 401) {
-      window.location.href = "../signinpage/signin.html";
-    }
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -305,6 +301,13 @@ async function getSharesAvailable() {
   }
 }
 
+//recieve broadcast from trade to change variable
+socket.onmessage = (event) => {
+  if (data === "updateValue") {
+    userTradeWithinCurrentSecond = true;
+  }
+};
+
 //changes price of the stock
 async function changePrice(price) {
   try {
@@ -318,7 +321,6 @@ async function changePrice(price) {
         withCredentials: true,
       }
     );
-    //broadcast variable called userTradeWithinCurrentSecond to be true after figuring out websocket (i already have it set up)
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");

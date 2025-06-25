@@ -627,6 +627,13 @@ app.post("/api/change-price", async (req, res) => {
   WHERE stock_id = $2 `,
       [price, idkMoreVariablesICanAssignToStockId93577234587878787878]
     );
+
+    //broadcast variable change
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send("there was a trade fr");
+      }
+    });
   } catch (error) {
     console.error(error);
   }
