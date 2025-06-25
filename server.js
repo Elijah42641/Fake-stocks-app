@@ -35,6 +35,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+//websocket set up
 wss.on("connection", (ws) => {
   console.log("new client connected");
 
@@ -614,16 +615,18 @@ ORDER BY open_time ASC;`,
   }
 });
 
-app.post("/api/checkSharesAvailable", async (req, res) => {
+app.post("/api/change-price", async (req, res) => {
   try {
-    const idkMoreVariablesICanAssignToStockId935772345 = req.session.idOfStock;
-    const shares = await pool.query(
-      `SELECT shares_available FROM stocks WHERE stock_id = ${idkMoreVariablesICanAssignToStockId935772345}`
+    const { price } = req.body;
+    const idkMoreVariablesICanAssignToStockId93577234587878787878 =
+      req.session.idOfStock;
+    const changeStockPrice = await pool.query(
+      `  UPDATE stocks 
+  SET price = $1, 
+      last_updated = NOW() 
+  WHERE stock_id = $2 `,
+      [price, idkMoreVariablesICanAssignToStockId93577234587878787878]
     );
-
-    return res.json({
-      price: shares,
-    });
   } catch (error) {
     console.error(error);
   }

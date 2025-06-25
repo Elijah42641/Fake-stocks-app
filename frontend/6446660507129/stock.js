@@ -23,6 +23,50 @@ const data = {
   ],
 };
 
+let userTradeWithinCurrentSecond;
+
+async function updateOnBuyOrSell() {
+  currentPriceForUserStock = await getCurrentPrice();
+  if (
+    currentPriceForUserStock >
+    data.datasets[0].data[data.datasets[0].data.length - 1].h
+  ) {
+    data.datasets[0].data[data.datasets[0].data.length - 1].h =
+      currentPriceForUserStock;
+    myChart.update();
+  } else if (
+    currentPriceForUserStock <
+    data.datasets[0].data[data.datasets[0].data.length - 1].l
+  ) {
+    data.datasets[0].data[data.datasets[0].data.length - 1].l =
+      currentPriceForUserStock;
+    myChart.update();
+  } else if (
+    currentPriceForUserStock >
+    data.datasets[0].data[data.datasets[0].data.length - 1].c
+  ) {
+    data.datasets[0].data[data.datasets[0].data - 1].c =
+      currentPriceForUserStock;
+    myChart.update();
+  } else if (
+    currentPriceForUserStock <
+    data.datasets[0].data[data.datasets[0].data.length - 1].c
+  ) {
+    data.datasets[0].data[data.datasets[0].data - 1].c =
+      currentPriceForUserStock;
+    myChart.update();
+  }
+}
+
+//displays the new stock price every second if at least one trade is made
+function needAFunctionNameForThisSoItCanCallItself() {
+  if ((userTradeWithinCurrentSecond = true)) {
+    updateOnBuyOrSell();
+    userTradeWithinCurrentSecond = false;
+    setTimeout(needAFunctionNameForThisSoItCanCallItself, 1000);
+  }
+}
+
 //returns candlesticks in an array
 async function candlesticksForTimeFrame(frameSwitchedTo) {
   try {
@@ -219,39 +263,6 @@ function generateCandlesForTimeFrame(timeFrame) {
   myChart.update();
 }
 
-async function updateOnBuyOrSell() {
-  currentPriceForUserStock = await getCurrentPrice();
-  if (
-    currentPriceForUserStock >
-    data.datasets[0].data[data.datasets[0].data.length - 1].h
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].h =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock <
-    data.datasets[0].data[data.datasets[0].data.length - 1].l
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].l =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock >
-    data.datasets[0].data[data.datasets[0].data.length - 1].c
-  ) {
-    data.datasets[0].data[data.datasets[0].data - 1].c =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock <
-    data.datasets[0].data[data.datasets[0].data.length - 1].c
-  ) {
-    data.datasets[0].data[data.datasets[0].data - 1].c =
-      currentPriceForUserStock;
-    myChart.update();
-  }
-} //run this function when user buys or sells a stock
-
 //iterates through an array of time frames and runs a looping function to constantly add new candlesticks
 async function generateCandlesForEACHtimeFrame() {
   //one minute, five minutes, 20 mintues, one hour, three hours, one day, one week
@@ -294,19 +305,48 @@ async function getSharesAvailable() {
   }
 }
 
-//add function to change the price of stock based on the percent of shares available
+//changes price of the stock
+async function changePrice(price) {
+  try {
+    const response = await axios.post(
+      "http://localhost:4000/api/change-price",
+      { price },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    //broadcast variable called userTradeWithinCurrentSecond to be true after figuring out websocket (i already have it set up)
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.log("redirect");
+      window.location.href = "../signinpage/signin.html";
+    } else {
+      console.error(error);
+    }
+  }
+}
 
 async function changePriceOnUserTrade(currencySpent, currencyWasBought) {
   try {
-    const sharesBoughtOrSold = currencySpent / currentPriceForUserStock;
+    const placeholder = await getCurrentPrice();
+    const sharesBoughtOrSold = currencySpent / placeholder;
     sharesAvailable = getSharesAvailable();
     const percentChangedBy =
       Math.round((sharesBoughtOrSold / sharesAvailable) * 0.05 * 100) / 100;
 
+    let newPrice;
+    const placeholder1 = await getCurrentPrice();
+    userTradeWithinCurrentSecond = true;
+
     if (currencyWasBought == true) {
-      changePriceByPercentChangedBy(percentChangedBy);
+      newPrice = placeholder1 * percentChangedBy + placeholder1;
+      changePrice(newPrice);
     } else if (currencyWasBought == false) {
-      changePriceByPercentChangedBy(-percentChangedBy);
+      newPrice = placeholder1 * percentChangedBy + placeholder1;
+      changePrice(-newPrice);
     }
   } catch (error) {
     console.error(error);
