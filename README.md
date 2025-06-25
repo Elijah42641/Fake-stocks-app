@@ -10,4 +10,5 @@ how to run: <br>
 3. open another terminal and run npm start <br>
 4. open port that vite is run on from step 2 (localhost) <br>
 5. it will show a blank page, i dont have index.html so manually <br>
-locate to localhost:port/signup/signup.html
+locate to localhost:<vite's port>/signuppage/signup.html <br>
+i havent done the design for the authentication, but everything else is styled
