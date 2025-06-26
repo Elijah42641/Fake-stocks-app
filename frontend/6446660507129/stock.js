@@ -84,10 +84,6 @@ async function candlesticksForTimeFrame(frameSwitchedTo) {
     );
 
     return response.candlesticks;
-
-    if (response.status === 401) {
-      window.location.href = "../signinpage/signin.html";
-    }
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -301,13 +297,6 @@ async function getSharesAvailable() {
   }
 }
 
-//recieve broadcast from trade to change variable
-socket.onmessage = (event) => {
-  if (data === "updateValue") {
-    userTradeWithinCurrentSecond = true;
-  }
-};
-
 //changes price of the stock
 async function changePrice(price) {
   try {
@@ -409,6 +398,13 @@ sell.addEventListener("click", () => {
     changePriceOnUserTrade(userTradeAmount, true);
   }
 });
+
+//recieve broadcast from trade to change variable
+socket.onmessage = (event) => {
+  if (data === "updateValue") {
+    userTradeWithinCurrentSecond = true;
+  }
+};
 
 // config
 const config = {

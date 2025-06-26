@@ -5,6 +5,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    optimizeDeps: {
+      exclude: ["ws"], // Tell Vite to ignore `ws`
+    },
     proxy: {
       "/api": {
         target: "http://localhost:4000",

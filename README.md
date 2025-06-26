@@ -5,10 +5,11 @@ write the html and react that is created when files are generated for the add st
 <br> start implementing buying and selling of stocks and the prices being affected <br>
 <br>
 how to run: <br>
+
 1. open codespace for repo (if you dont know how google it) <br>
-2. open terminal run cd frontend, then run npm run dev <br>
-3. open another terminal and run npm start <br>
-4. open port that vite is run on from step 2 (localhost) <br>
+2. move package.json from the root to the frontend folder then open terminal run cd frontend, then run npm run dev <br>
+3. move package.json from frontend back to the root then open another terminal and run npm start <br>
+4. pen port that vite is run on from step 2 (localhost) <br>
 5. it will show a blank page, i dont have index.html so manually <br>
-locate to localhost:<vite's port>/signuppage/signuppage.html <br>
-i havent done the design for the authentication, but everything else is styled
+   locate to localhost:<vite's port>/signuppage/signuppage.html <br>
+   i havent done the design for the authentication, but everything else is styled
