@@ -348,12 +348,67 @@ async function changePriceOnUserTrade(currencySpent, currencyWasBought) {
       changePrice(newPrice);
     } else if (currencyWasBought == false) {
       newPrice = placeholder1 * percentChangedBy + placeholder1;
-      changePrice(-newPrice);
+      changePrice(newPrice);
     }
   } catch (error) {
     console.error(error);
   }
 }
+
+//event listeners for the html where user makes trade
+const userTradeAmount = document.getElementById("userTradeAmount");
+const buy = document.getElementById("buy");
+const sell = document.getElementById("sell");
+const invalidTradeText = document.getElementById("invalidTradeText");
+
+async function checkUserCurrencyAmount() {
+  try {
+    const response = await axios.post(
+      "http://localhost:4000/api/check-user-currency-amount",
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    return response.coins;
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.log("redirect");
+      window.location.href = "../signinpage/signin.html";
+    } else {
+      console.error(error);
+    }
+  }
+}
+
+function checkUserHasEnoughCurrency() {
+  const coins = checkUserCurrencyAmount();
+  if (coins < userTradeAmount) {
+    invalidTradeText.textContent = "Not enough coins";
+    return;
+  } else if (userTradeAmount < 200) {
+    invalidTradeText.textContent = "Minimum trade amount is 200 coins";
+    return;
+  } else {
+    invalidTradeText.textContent = "";
+    return "valid trade amount";
+  }
+}
+
+buy.addEventListener("click", () => {
+  if (checkUserHasEnoughCurrency() == "valid trade amount") {
+    changePriceOnUserTrade(userTradeAmount, true);
+  }
+});
+
+sell.addEventListener("click", () => {
+  if (checkUserHasEnoughCurrency() == "valid trade amount") {
+    changePriceOnUserTrade(userTradeAmount, true);
+  }
+});
 
 // config
 const config = {

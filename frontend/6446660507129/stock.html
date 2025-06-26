@@ -66,9 +66,47 @@
 
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script type="module" src="stock.js"></script>
-      <!--add the part where users make a new trade here, i dont feel like adding react so just make the prompt fade in when clicking
-      the cta to make a trade-->
-      <!--also make sure to add event listeners and send how much the user spent on buying or selling the stock to the existing functions-->
+      <button id="trade-cta">Make a Trade</button>
+
+      <!--part where user makes trade-->
+      <div id="trade-prompt" class="hidden">
+        <h2>New Trade</h2>
+        <input id="userTradeAmount" type="number" placeholder="Enter amount" />
+        <p id="invalidTradeText"></p>
+        <button id="sell">Sell</button>
+        <button id="buy">Buy</button>
+      </div>
+
+      <style>
+        #trade-prompt {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+        }
+      
+        #trade-prompt.visible {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      
+        #trade-prompt.hidden {
+          display: none;
+        }
+      </style>
+      <!--later add validation if user has that much currency and check if there is enough shares to buy or sell,-->
+      <!--also check if user has enough currency-->
+      <script>
+        const cta = document.getElementById('trade-cta');
+        const prompt = document.getElementById('trade-prompt');
+      
+        cta.addEventListener('click', () => {
+          prompt.classList.remove('hidden');
+          setTimeout(() => {
+            prompt.classList.add('visible');
+          }, 10); // allow DOM to register the visibility change
+        });
+      </script>
+      
       </body>
     </html>
   </body>

@@ -134,8 +134,8 @@ app.post("/api/createaccount", async (req, res) => {
 
     // Create new account
     await pool.query(
-      "INSERT INTO accountcredentials (username,password) VALUES ($1, $2)",
-      [username, hashedPassword]
+      "INSERT INTO accountcredentials (username,password, coins) VALUES ($1, $2, $3)",
+      [username, hashedPassword, 500]
     );
 
     await pool.query("INSERT INTO otheraccountdata (username) VALUES ($1)", [
@@ -633,6 +633,21 @@ app.post("/api/change-price", async (req, res) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send("there was a trade fr");
       }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.post("/api/check-user-currency-amount", async (req, res) => {
+  try {
+    const username = req.session.user;
+    const coins = await pool.query(
+      `SELECT coins FROM otheraccountdata WHERE username = $1`,
+      [username]
+    );
+    return res.json({
+      coins: coins,
     });
   } catch (error) {
     console.error(error);
