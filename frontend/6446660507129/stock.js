@@ -1,5 +1,4 @@
 // setup
-import { theStockId } from "../../server.js";
 import { Chart, TimeScale, LinearScale, Tooltip, Legend } from "chart.js";
 import {
   CandlestickController,
