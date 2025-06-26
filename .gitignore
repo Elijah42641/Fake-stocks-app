@@ -3,3 +3,4 @@ dist/
 node-modules/
 package.json
 package-lock.json
+node_modules
