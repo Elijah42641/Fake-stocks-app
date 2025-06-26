@@ -140,7 +140,7 @@ app.post("/api/createaccount", async (req, res) => {
 
     await pool.query(
       "INSERT INTO otheraccountdata (username, coins) VALUES ($1, $2)",
-      [username, coins]
+      [username, 500]
     );
 
     console.log("data successfully inserted");
