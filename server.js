@@ -134,13 +134,14 @@ app.post("/api/createaccount", async (req, res) => {
 
     // Create new account
     await pool.query(
-      "INSERT INTO accountcredentials (username,password, coins) VALUES ($1, $2, $3)",
-      [username, hashedPassword, 500]
+      "INSERT INTO accountcredentials (username,password, coins) VALUES ($1, $2)",
+      [username, hashedPassword]
     );
 
-    await pool.query("INSERT INTO otheraccountdata (username) VALUES ($1)", [
-      username,
-    ]);
+    await pool.query(
+      "INSERT INTO otheraccountdata (username, coins) VALUES ($1, $2)",
+      [username, coins]
+    );
 
     console.log("data successfully inserted");
 
