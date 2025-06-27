@@ -3,140 +3,370 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="stock.css" />
-    <title>fds</title>
+    <title>FakeStocks Chart</title>
     <style>
+      /* Reset and base */
       * {
         margin: 0;
         padding: 0;
-        font-family: sans-serif;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
+      body,
+      html {
+        height: 100%;
+        background-color: #121212;
+        color: #ddd;
+      }
+
+      /* Navbar */
       .chartMenu {
-        width: 100vw;
-        height: 40px;
-        background: #1a1a1a;
-        color: rgba(54, 162, 235, 1);
-      }
-      .chartMenu p {
-        padding: 10px;
-        font-size: 20px;
-      }
-      .chartCard {
-        width: 100vw;
-        height: calc(100vh - 40px);
-        background: rgba(54, 162, 235, 0.2);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background-color: #111;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        box-shadow: 0 2px 8px #36a2eb44;
+        z-index: 1000;
+        user-select: none;
       }
-      .gridContainerForTimeFrame {
-        padding: 10px;
+      .chartMenu p {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #36a2eb;
+      }
+      .stockInfo {
+        font-family: monospace;
+        font-size: 1rem;
+        color: #36a2eb;
         display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-        background-color: #222;
+        gap: 24px;
       }
-
-      .timeFrame {
-        padding: 8px 16px;
-        background: #1a1a1a;
-        color: white;
-        border: 1px solid rgba(54, 162, 235, 0.8);
-        border-radius: 6px;
-        cursor: pointer;
-      }
-
-      #trade-prompt {
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-        background: white;
-        padding: 20px;
-        width: 300px;
-        margin: 20px auto;
-        text-align: center;
-        border: 2px solid rgba(54, 162, 235, 1);
+      .stockInfo span {
+        background-color: #0b1a2a;
+        padding: 4px 10px;
         border-radius: 12px;
+        box-shadow: 0 0 8px #36a2eb77;
       }
 
-      #trade-prompt.visible {
-        opacity: 1;
-        pointer-events: auto;
+      /* Main container below navbar */
+      main {
+        padding: 72px 24px 100px; /* top padding accounts for navbar */
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
-      #trade-prompt.hidden {
-        display: none;
+      /* Chart container */
+      .chartCard {
+        background: #162a45;
+        border-radius: 16px;
+        box-shadow: 0 0 20px #36a2eb66;
+        padding: 16px;
       }
-
-      #trade-cta {
+      .chartBox {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 2px solid #36a2eb;
+        background: #0b1a2a;
+        padding: 12px 6px;
+      }
+      #myChart {
         display: block;
-        margin: 20px auto;
-        padding: 10px 20px;
-        background: #1a1a1a;
-        color: white;
-        border: 1px solid rgba(54, 162, 235, 1);
-        border-radius: 6px;
+        max-height: 450px;
+        /* width set dynamically by JS */
+      }
+
+      /* Timeframe buttons scroll container */
+      .gridContainerForTimeFrame {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 12px 8px;
+        background-color: #111e33;
+        border-radius: 12px;
+        user-select: none;
+      }
+      .gridContainerForTimeFrame::-webkit-scrollbar {
+        height: 6px;
+      }
+      .gridContainerForTimeFrame::-webkit-scrollbar-thumb {
+        background: #36a2ebaa;
+        border-radius: 10px;
+      }
+
+      /* Buttons */
+      .timeFrame {
+        flex: 0 0 auto;
+        padding: 10px 22px;
+        background: linear-gradient(135deg, #204a7d, #1a3555);
+        border: 1.5px solid #36a2eb;
+        border-radius: 10px;
+        color: #a0c8ff;
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
+        transition: all 0.25s ease;
+      }
+      .timeFrame:hover,
+      .timeFrame:focus {
+        background: #36a2eb;
+        color: #111;
+        outline: none;
+        box-shadow: 0 0 16px #36a2ebcc;
+      }
+      .timeFrame:active {
+        transform: scale(0.96);
+      }
+
+      /* Trade button fixed bottom right */
+      #trade-cta {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 14px 32px;
+        background: #36a2eb;
+        border: none;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #111;
+        cursor: pointer;
+        box-shadow: 0 0 24px #36a2ebaa;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        user-select: none;
+        z-index: 1100;
+      }
+      #trade-cta:hover,
+      #trade-cta:focus {
+        background: #1e74d9;
+        box-shadow: 0 0 32px #1e74d9cc;
+        outline: none;
+      }
+      #trade-cta:active {
+        transform: scale(0.95);
+      }
+
+      /* Trade prompt modal with backdrop */
+      #trade-prompt-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(18, 18, 18, 0.85);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+      }
+      #trade-prompt-backdrop.visible {
+        display: flex;
+      }
+      #trade-prompt {
+        background: #1a1a1a;
+        padding: 32px 28px;
+        border-radius: 20px;
+        border: 2px solid #36a2eb;
+        box-shadow: 0 0 24px #36a2eb88;
+        max-width: 360px;
+        width: 90vw;
+        color: #ddd;
+        text-align: center;
+        user-select: text;
+      }
+      #trade-prompt h2 {
+        margin-bottom: 18px;
+        color: #36a2eb;
+        font-weight: 700;
+        font-size: 1.75rem;
+      }
+      #trade-prompt input[type="number"] {
+        width: 100%;
+        padding: 14px 12px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        border: 1.5px solid #36a2eb;
+        background: #0b1a2a;
+        color: #a0c8ff;
+        margin-bottom: 14px;
+        transition: border-color 0.3s ease;
+      }
+      #trade-prompt input[type="number"]:focus {
+        border-color: #75baff;
+        outline: none;
+      }
+      #invalidTradeText {
+        min-height: 22px;
+        font-weight: 600;
+        color: #f44336;
+        margin-bottom: 14px;
+      }
+      #trade-prompt button {
+        padding: 12px 26px;
+        margin: 0 8px;
+        background: #36a2eb;
+        border: none;
+        border-radius: 14px;
+        color: #111;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+      }
+      #trade-prompt button:hover,
+      #trade-prompt button:focus {
+        background: #1e74d9;
+        box-shadow: 0 0 24px #1e74d9cc;
+        outline: none;
+      }
+      #trade-prompt button:active {
+        transform: scale(0.95);
+      }
+
+      /* Scrollbar for chartBox */
+      .chartBox::-webkit-scrollbar {
+        height: 8px;
+      }
+      .chartBox::-webkit-scrollbar-thumb {
+        background-color: #36a2ebcc;
+        border-radius: 10px;
+      }
+      .chartBox::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Responsive */
+      @media (max-width: 700px) {
+        .chartCard {
+          padding: 12px 8px;
+          border-radius: 12px;
+        }
+        main {
+          padding: 72px 12px 100px;
+        }
+        .gridContainerForTimeFrame {
+          padding: 10px 6px;
+          gap: 8px;
+        }
+        .timeFrame {
+          padding: 8px 18px;
+          font-size: 0.9rem;
+        }
+        #trade-prompt {
+          padding: 28px 20px;
+          max-width: 320px;
+        }
       }
     </style>
   </head>
+  <body>
+    <header class="chartMenu" role="banner">
+      <p>WWW.FAKESTOCKS.COM (Chart JS <span id="chartVersion"></span>)</p>
+      <nav class="stockInfo" aria-label="Stock information">
+        <span id="currentPrice">Price: $--</span>
+        <span id="lastUpdated">Last update: --:--:--</span>
+      </nav>
+    </header>
 
-  <div class="chartMenu">
-    <p>WWW.FAKESTOCKS.COM (Chart JS <span id="chartVersion"></span>)</p>
-  </div>
+    <main role="main" tabindex="-1">
+      <section class="chartCard" aria-label="Stock chart area">
+        <div class="chartBox">
+          <canvas id="myChart" aria-describedby="chartDesc"></canvas>
+        </div>
+        <p id="chartDesc" style="position: absolute; left: -9999px">
+          A candlestick chart representing stock price movements over time.
+        </p>
+      </section>
 
-  <div class="stockInfo">
-    <span id="currentPrice">Price: $--</span>
-    <span id="lastUpdated">Last update: --:--:--</span>
-  </div>
+      <nav class="gridContainerForTimeFrame" aria-label="Time frame selection">
+        <button class="timeFrame" id="oneMinute">1 minute</button>
+        <button class="timeFrame" id="fiveMinutes">5 minutes</button>
+        <button class="timeFrame" id="twentyMinutes">20 minutes</button>
+        <button class="timeFrame" id="oneHour">1 hour</button>
+        <button class="timeFrame" id="threeHours">3 hours</button>
+        <button class="timeFrame" id="oneDay">1 day</button>
+        <button class="timeFrame" id="oneWeek">1 week</button>
+      </nav>
+    </main>
 
-  <div class="chartCard">
-    <div class="chartBox">
-      <canvas id="myChart"></canvas>
+    <button
+      id="trade-cta"
+      aria-haspopup="dialog"
+      aria-controls="trade-prompt-backdrop"
+      aria-expanded="false"
+    >
+      Make a Trade
+    </button>
+
+    <div
+      id="trade-prompt-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="trade-prompt-title"
+      tabindex="-1"
+    >
+      <div id="trade-prompt">
+        <h2 id="trade-prompt-title">New Trade</h2>
+        <input
+          id="userTradeAmount"
+          type="number"
+          placeholder="Enter amount"
+          aria-describedby="invalidTradeText"
+        />
+        <p id="invalidTradeText" aria-live="assertive"></p>
+        <button id="sell">Sell</button>
+        <button id="buy">Buy</button>
+      </div>
     </div>
-  </div>
 
-  <div class="gridContainerForTimeFrame">
-    <button class="timeFrame" id="oneMinute">1 minute</button>
-    <button class="timeFrame" id="fiveMinutes">5 minutes</button>
-    <button class="timeFrame" id="twentyMinutes">20 minutes</button>
-    <button class="timeFrame" id="oneHour">1 hour</button>
-    <button class="timeFrame" id="threeHours">3 hours</button>
-    <button class="timeFrame" id="oneDay">1 day</button>
-    <button class="timeFrame" id="oneWeek">1 week</button>
-  </div>
+    <!-- JS Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+    <script type="module" src="stock.js"></script>
 
-  <button id="trade-cta">Make a Trade</button>
+    <script>
+      // Chart.js version
+      document.getElementById("chartVersion").innerText = Chart.version;
 
-  <div id="trade-prompt" class="hidden">
-    <h2>New Trade</h2>
-    <input id="userTradeAmount" type="number" placeholder="Enter amount" />
-    <p id="invalidTradeText"></p>
-    <button id="sell">Sell</button>
-    <button id="buy">Buy</button>
-  </div>
+      const cta = document.getElementById("trade-cta");
+      const promptBackdrop = document.getElementById("trade-prompt-backdrop");
 
-  <!-- JS Dependencies -->
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
-  <script type="module" src="stock.js"></script>
+      cta.addEventListener("click", () => {
+        const expanded = cta.getAttribute("aria-expanded") === "true";
+        cta.setAttribute("aria-expanded", !expanded);
+        promptBackdrop.classList.toggle("visible");
+        if (!expanded) {
+          document.getElementById("userTradeAmount").focus();
+        } else {
+          cta.focus();
+        }
+      });
 
-  <script>
-    const cta = document.getElementById("trade-cta");
-    const prompt = document.getElementById("trade-prompt");
-
-    cta.addEventListener("click", () => {
-      prompt.classList.remove("hidden");
-      setTimeout(() => {
-        prompt.classList.add("visible");
-      }, 10);
-    });
-
-    // Chart.js version
-    document.getElementById("chartVersion").innerText = Chart.version;
-  </script>
+      // Close modal on backdrop click or ESC key
+      promptBackdrop.addEventListener("click", (e) => {
+        if (e.target === promptBackdrop) {
+          cta.setAttribute("aria-expanded", "false");
+          promptBackdrop.classList.remove("visible");
+          cta.focus();
+        }
+      });
+      window.addEventListener("keydown", (e) => {
+        if (
+          e.key === "Escape" &&
+          promptBackdrop.classList.contains("visible")
+        ) {
+          cta.setAttribute("aria-expanded", "false");
+          promptBackdrop.classList.remove("visible");
+          cta.focus();
+        }
+      });
+    </script>
+  </body>
 </html>

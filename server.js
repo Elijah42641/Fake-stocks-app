@@ -1213,8 +1213,7 @@ app.post("/api/:stockId/change-price", async (req, res) => {
       req.params.stockId;
     const changeStockPrice = await pool.query(
       `  UPDATE stocks 
-  SET price = $1, 
-      last_updated = NOW() 
+  SET price = $1
   WHERE stock_id = $2 `,
       [price, idkMoreVariablesICanAssignToStockId93577234587878787878]
     );
@@ -1232,13 +1231,18 @@ app.post("/api/:stockId/change-price", async (req, res) => {
 
 app.post("/api/check-user-currency-amount", async (req, res) => {
   try {
-    const username = req.session.user;
+    if (!req.session.user || req.session.user === undefined) {
+      return res.status(401);
+    }
+
+    const username = req.session.user.username;
     const coins = await pool.query(
       `SELECT coins FROM otheraccountdata WHERE username = $1`,
       [username]
     );
     return res.json({
       coins: coins.rows[0],
+      username: username,
     });
   } catch (error) {
     console.error(error);

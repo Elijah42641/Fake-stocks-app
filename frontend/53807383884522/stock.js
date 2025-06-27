@@ -59,10 +59,10 @@ async function displayTimeFrameCandlesticks(framePassed) {
 
     const parsedCandles = arrayOfCandles.map((candle) => ({
       x: Number(candle.open_time),
-      o: candle.open,
-      h: candle.high,
-      l: candle.low,
-      c: candle.close,
+      o: parseFloat(candle.open),
+      h: parseFloat(candle.high),
+      l: parseFloat(candle.low),
+      c: parseFloat(candle.close),
     }));
 
     data.datasets[0].data = parsedCandles;
@@ -148,48 +148,6 @@ async function getCandlesOnChart() {
   }
 }
 
-async function updateOnBuyOrSell() {
-  currentPriceForUserStock = await getCurrentPrice();
-  if (
-    currentPriceForUserStock >
-    data.datasets[0].data[data.datasets[0].data.length - 1].h
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].h =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock <
-    data.datasets[0].data[data.datasets[0].data.length - 1].l
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].l =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock >
-    data.datasets[0].data[data.datasets[0].data.length - 1].c
-  ) {
-    data.datasets[0].data[data.datasets[0].data - 1].c =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock <
-    data.datasets[0].data[data.datasets[0].data.length - 1].c
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].c =
-      currentPriceForUserStock;
-    myChart.update();
-  }
-}
-
-//displays the new stock price every second if at least one trade is made
-function needAFunctionNameForThisSoItCanCallItself() {
-  if (userTradeWithinCurrentSecond == true) {
-    updateOnBuyOrSell();
-    userTradeWithinCurrentSecond = false;
-    setTimeout(needAFunctionNameForThisSoItCanCallItself, 1000);
-  }
-}
-
 //adds to database as the function says
 async function addCandleToDatabase(
   timeFrame,
@@ -230,34 +188,119 @@ async function addCandleToDatabase(
   }
 }
 
-//generates candles for time frame given
-async function generateCandlesForTimeFrame(timeFrame) {
-  let currentPriceForUserStock = await getCurrentPrice();
-  let candlesOnChart = await getCandlesOnChart();
-  const candle = {
-    x: Date.now(),
-    o: currentPriceForUserStock,
-    h: currentPriceForUserStock,
-    l: currentPriceForUserStock,
-    c: currentPriceForUserStock,
-  };
+class GenerateCandles {
+  constructor() {
+    this.currentPriceForUserStock = null;
+    this.candlesOnChart = null;
+    this.candle = null; // store current candle here
+  }
 
-  setTimeout(() => {
-    //adds the candle before new one is created
-    addCandleToDatabase(
-      timeFrame,
-      candle.x,
-      candle.o,
-      candle.h,
-      candle.l,
-      candle.c,
-      Date.now()
-    );
-    generateCandlesForTimeFrame(timeFrame);
-  }, timeFrame);
-  candlesOnChart += 1;
-  myChart.update();
-  console.log("candle created", candle);
+  async init() {
+    this.currentPriceForUserStock = await getCurrentPrice();
+    this.candlesOnChart = await getCandlesOnChart();
+
+    // initialize current candle with current price
+    this.candle = {
+      x: Date.now(),
+      o: this.currentPriceForUserStock,
+      h: this.currentPriceForUserStock,
+      l: this.currentPriceForUserStock,
+      c: this.currentPriceForUserStock,
+    };
+  }
+
+  async updatePrice() {
+    this.currentPriceForUserStock = await getCurrentPrice();
+  }
+
+  generateCandlesForTimeFrame(timeFrame) {
+    (async () => {
+      addCandleToDatabase(
+        timeFrame,
+        this.candle.x,
+        this.candle.o,
+        this.candle.h,
+        this.candle.l,
+        this.candle.c,
+        Date.now()
+      );
+
+      console.log("created candle for ", timeFrame);
+
+      this.currentPriceForUserStock = await getCurrentPrice();
+      this.candle = {
+        x: Date.now(),
+        o: this.currentPriceForUserStock,
+        h: this.currentPriceForUserStock,
+        l: this.currentPriceForUserStock,
+        c: this.currentPriceForUserStock,
+      };
+
+      myChart.update();
+      this.candlesOnChart += 1;
+      console.log("Initial candle created for", timeFrame, this.candle);
+    })();
+
+    // Then set up the interval for future candles
+    setInterval(async () => {
+      await addCandleToDatabase(
+        timeFrame,
+        this.candle.x,
+        this.candle.o,
+        this.candle.h,
+        this.candle.l,
+        this.candle.c,
+        Date.now()
+      );
+
+      this.currentPriceForUserStock = await getCurrentPrice();
+      this.candle = {
+        x: Date.now(),
+        o: this.currentPriceForUserStock,
+        h: this.currentPriceForUserStock,
+        l: this.currentPriceForUserStock,
+        c: this.currentPriceForUserStock,
+      };
+
+      data.datasets[0].data.push(this.candle);
+      myChart.update();
+      this.candlesOnChart += 1;
+      console.log("New candle created for", timeFrame, this.candle);
+    }, timeFrame);
+  }
+
+  async updateOnBuyOrSell() {
+    await this.updatePrice();
+
+    const lastDataIndex = data.datasets[0].data.length - 1;
+    const lastCandle = data.datasets[0].data[lastDataIndex];
+
+    if (this.currentPriceForUserStock > lastCandle.h) {
+      lastCandle.h = this.currentPriceForUserStock;
+      this.candle.h = this.currentPriceForUserStock;
+    }
+    if (this.currentPriceForUserStock < lastCandle.l) {
+      lastCandle.l = this.currentPriceForUserStock;
+      this.candle.l = this.currentPriceForUserStock;
+    }
+    if (this.currentPriceForUserStock !== lastCandle.c) {
+      lastCandle.c = this.currentPriceForUserStock;
+      this.candle.c = this.currentPriceForUserStock;
+    }
+
+    myChart.update();
+  }
+}
+
+const generateCandles = new GenerateCandles();
+
+//displays the new stock price every second if at least one trade is made
+function needAFunctionNameForThisSoItCanCallItself() {
+  if (userTradeWithinCurrentSecond === true) {
+    generateCandles.updateOnBuyOrSell();
+    userTradeWithinCurrentSecond = false;
+  }
+  setTimeout(needAFunctionNameForThisSoItCanCallItself, 1000);
 }
 
 //iterates through an array of time frames and runs a looping function to constantly add new candlesticks
@@ -265,27 +308,26 @@ async function generateCandlesForEACHtimeFrame() {
   //one minute, five minutes, 20 mintues, one hour, three hours, one day, one week
   const timeFrames = [60000, 300000, 1.2e6, 3.6e6, 1.08e7, 8.64e7, 6.048e8];
 
-  timeFrames.forEach((frame) => generateCandlesForTimeFrame(frame));
+  timeFrames.forEach((frame) =>
+    generateCandles.generateCandlesForTimeFrame(frame)
+  );
 }
 
 //if there are no candles then it goes to that function
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("page loaded");
-  let currentPriceForUserStock = await getCurrentPrice();
+  await generateCandles.init();
+
   let candlesOnChart = await getCandlesOnChart();
-  if (
-    !candlesOnChart ||
-    candlesOnChart == null ||
-    candlesOnChart == 0 ||
-    candlesOnChart.length == 0
-  ) {
+  if (!candlesOnChart || candlesOnChart == 0) {
     console.log("candle is being created, stock is new", candlesOnChart);
-    displayTimeFrameCandlesticks(60000);
     generateCandlesForEACHtimeFrame();
+    location.reload(true);
+    displayTimeFrameCandlesticks(60000);
     needAFunctionNameForThisSoItCanCallItself();
   } else {
     console.log("stock is not new", candlesOnChart);
     displayTimeFrameCandlesticks(60000);
+    needAFunctionNameForThisSoItCanCallItself(); // Also call it here to check for updates
   }
 });
 
@@ -324,7 +366,7 @@ async function changePriceOnUserTrade(currencySpent, currencyWasBought) {
   try {
     const placeholder = await getCurrentPrice();
     const sharesBoughtOrSold = currencySpent / placeholder;
-    sharesAvailable = await getSharesAvailable();
+    let sharesAvailable; //i need to make a function to call an api to check how many shares are available (and create the endpoint)
     const percentChangedBy =
       Math.round((sharesBoughtOrSold / sharesAvailable) * 0.05 * 100) / 100;
 
@@ -361,7 +403,7 @@ async function checkUserCurrencyAmount() {
         withCredentials: true,
       }
     );
-    return response.data.coins;
+    return response.data.coins.coins;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -378,7 +420,7 @@ async function checkUserHasEnoughCurrency() {
   if (coins < userTradeAmount) {
     invalidTradeText.textContent = "Not enough coins";
     return;
-  } else if (userTradeAmount < 200) {
+  } else if (Number(userTradeAmount) < 200) {
     invalidTradeText.textContent = "Minimum trade amount is 200 coins";
     return;
   } else {
