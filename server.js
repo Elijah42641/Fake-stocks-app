@@ -1173,32 +1173,9 @@ WHERE stock_id = $1 AND timeframe = $2
 ORDER BY open_time ASC;`,
         [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
       );
-    } else if (
-      candlesticksForTimeFrame.rows.length >= 400 &&
-      frameSwitchedTo === 6.048e8
-    ) {
-      await pool.query(
-        `DELETE FROM candlesticks
-         WHERE id = (
-           SELECT id FROM candlesticks
-           WHERE stock_id = $1 AND timeframe = $2
-           ORDER BY open_time ASC
-           LIMIT 1
-         )`,
-        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
-      );
-
-      candlesticksForTimeFrame = await pool.query(
-        `SELECT *
-FROM candlesticks
-WHERE stock_id = $1 AND timeframe = $2
-ORDER BY open_time ASC;`,
-        [idkMoreVariablesICanAssignToStockId1235545454545, frameSwitchedTo]
-      );
     }
-
     return res.json({
-      candlesticks: candlesticksForTimeFrame.rows,
+      candlesticks: candlesticksForTimeFrame,
       stockId: idkMoreVariablesICanAssignToStockId1235545454545,
     });
   } catch (error) {

@@ -54,18 +54,38 @@ async function candlesticksForTimeFrame(frameSwitchedTo) {
 //call this and pass the time frame when a user switches between frames
 async function displayTimeFrameCandlesticks(framePassed) {
   try {
-    const arrayOfCandles = await candlesticksForTimeFrame(framePassed);
+    let arrayOfCandles = await candlesticksForTimeFrame(framePassed);
     console.log("candles for frame", arrayOfCandles);
 
-    const parsedCandles = arrayOfCandles.map((candle) => ({
-      x: Number(candle.open_time),
-      o: parseFloat(candle.open),
-      h: parseFloat(candle.high),
-      l: parseFloat(candle.low),
-      c: parseFloat(candle.close),
-    }));
+    let parsedCandles;
 
-    data.datasets[0].data = parsedCandles;
+    if (arrayOfCandles.length > 1) {
+      parsedCandles = arrayOfCandles.map((candle) => ({
+        x: Number(candle.open_time),
+        o: parseFloat(candle.open),
+        h: parseFloat(candle.high),
+        l: parseFloat(candle.low),
+        c: parseFloat(candle.close),
+      }));
+      data.datasets[0].data = parsedCandles;
+    } else if (arrayOfCandles || typeof arrayOfCandles === "object") {
+      data.datasets[0].data = [
+        {
+          x: Number(arrayOfCandles[0].open_time),
+          o: parseFloat(arrayOfCandles[0].open),
+          h: parseFloat(arrayOfCandles[0].high),
+          l: parseFloat(arrayOfCandles[0].low),
+          c: parseFloat(arrayOfCandles[0].close),
+        },
+      ];
+      console.log(
+        arrayOfCandles[0].open_time,
+        arrayOfCandles[0].open,
+        arrayOfCandles[0].high,
+        arrayOfCandles[0].low,
+        arrayOfCandles[0].close
+      );
+    }
     myChart.update();
   } catch (error) {
     console.error(error);
@@ -95,10 +115,6 @@ document.getElementById("threeHours").addEventListener("click", () => {
 
 document.getElementById("oneDay").addEventListener("click", () => {
   displayTimeFrameCandlesticks(8.64e7);
-});
-
-document.getElementById("oneWeek").addEventListener("click", () => {
-  displayTimeFrameCandlesticks(6.048e8);
 });
 
 async function getCurrentPrice() {
@@ -306,7 +322,7 @@ function needAFunctionNameForThisSoItCanCallItself() {
 //iterates through an array of time frames and runs a looping function to constantly add new candlesticks
 async function generateCandlesForEACHtimeFrame() {
   //one minute, five minutes, 20 mintues, one hour, three hours, one day, one week
-  const timeFrames = [60000, 300000, 1.2e6, 3.6e6, 1.08e7, 8.64e7, 6.048e8];
+  const timeFrames = [60000, 300000, 1.2e6, 3.6e6, 1.08e7, 8.64e7];
 
   timeFrames.forEach((frame) =>
     generateCandles.generateCandlesForTimeFrame(frame)
@@ -321,7 +337,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!candlesOnChart || candlesOnChart == 0) {
     console.log("candle is being created, stock is new", candlesOnChart);
     generateCandlesForEACHtimeFrame();
-    location.reload(true);
     displayTimeFrameCandlesticks(60000);
     needAFunctionNameForThisSoItCanCallItself();
   } else {
