@@ -1,76 +1,34 @@
-// setup
-import { Chart, TimeScale, LinearScale, Tooltip, Legend } from "chart.js";
-import {
-  CandlestickController,
-  CandlestickElement,
-} from "chartjs-chart-financial";
-import { DateTime } from "luxon";
-import "chartjs-adapter-luxon";
+let userTradeWithinCurrentSecond;
 
-// Register Chart.js components
-Chart.register(TimeScale, LinearScale, Tooltip, Legend);
-
-// Register financial chart controllers and elements
-Chart.register(CandlestickController, CandlestickElement);
+const path = window.location.pathname;
+const e = path.split("/")[1];
 
 const data = {
   datasets: [
     {
-      barThickness: 18,
       data: [],
     },
   ],
 };
 
-let userTradeWithinCurrentSecond;
+const config = {
+  type: "candlestick",
+  data,
+  options: {
+    scales: {
+      y: {},
+    },
+    plugins: { legend: { display: false } },
+  },
+};
 
-async function updateOnBuyOrSell() {
-  currentPriceForUserStock = await getCurrentPrice();
-  if (
-    currentPriceForUserStock >
-    data.datasets[0].data[data.datasets[0].data.length - 1].h
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].h =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock <
-    data.datasets[0].data[data.datasets[0].data.length - 1].l
-  ) {
-    data.datasets[0].data[data.datasets[0].data.length - 1].l =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock >
-    data.datasets[0].data[data.datasets[0].data.length - 1].c
-  ) {
-    data.datasets[0].data[data.datasets[0].data - 1].c =
-      currentPriceForUserStock;
-    myChart.update();
-  } else if (
-    currentPriceForUserStock <
-    data.datasets[0].data[data.datasets[0].data.length - 1].c
-  ) {
-    data.datasets[0].data[data.datasets[0].data - 1].c =
-      currentPriceForUserStock;
-    myChart.update();
-  }
-}
-
-//displays the new stock price every second if at least one trade is made
-function needAFunctionNameForThisSoItCanCallItself() {
-  if (userTradeWithinCurrentSecond == true) {
-    updateOnBuyOrSell();
-    userTradeWithinCurrentSecond = false;
-    setTimeout(needAFunctionNameForThisSoItCanCallItself, 1000);
-  }
-}
+let myChart = new Chart(document.getElementById("myChart"), config);
 
 //returns candlesticks in an array
 async function candlesticksForTimeFrame(frameSwitchedTo) {
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/retrieveCandlesForFrame",
+      `http://localhost:4000/api/${e}/retrieveCandlesForFrame`,
       {
         frameSwitchedTo,
       },
@@ -82,7 +40,7 @@ async function candlesticksForTimeFrame(frameSwitchedTo) {
       }
     );
 
-    return response.candlesticks;
+    return response.data.candlesticks;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -96,11 +54,19 @@ async function candlesticksForTimeFrame(frameSwitchedTo) {
 //call this and pass the time frame when a user switches between frames
 async function displayTimeFrameCandlesticks(framePassed) {
   try {
-    const arrayOfCandles = candlesticksForTimeFrame(framePassed);
-    data.datasets[0].data.length = 0;
-    arrayOfCandles.forEach((candleInFrame) =>
-      data.datasets[0].data.push(candleInFrame)
-    );
+    const arrayOfCandles = await candlesticksForTimeFrame(framePassed);
+    console.log("candles for frame", arrayOfCandles);
+
+    const parsedCandles = arrayOfCandles.map((candle) => ({
+      x: Number(candle.open_time),
+      o: candle.open,
+      h: candle.high,
+      l: candle.low,
+      c: candle.close,
+    }));
+
+    data.datasets[0].data = parsedCandles;
+    myChart.update();
   } catch (error) {
     console.error(error);
   }
@@ -138,7 +104,7 @@ document.getElementById("oneWeek").addEventListener("click", () => {
 async function getCurrentPrice() {
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/checkStockPrice",
+      `http://localhost:4000/api/${e}/checkStockPrice`,
       {},
       {
         headers: {
@@ -147,7 +113,8 @@ async function getCurrentPrice() {
         withCredentials: true,
       }
     );
-    return response.price;
+    console.log(response.data.stockId);
+    return response.data.price;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -161,7 +128,7 @@ async function getCurrentPrice() {
 async function getCandlesOnChart() {
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/checkCandlestickAmount",
+      `http://localhost:4000/api/${e}/checkCandlestickAmount`,
       {},
       {
         headers: {
@@ -170,11 +137,7 @@ async function getCandlesOnChart() {
         withCredentials: true,
       }
     );
-    return response.candlestickAmount;
-
-    if (response.status === 401) {
-      window.location.href = "../signinpage/signin.html";
-    }
+    return response.data.candlestickAmount;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -185,8 +148,47 @@ async function getCandlesOnChart() {
   }
 }
 
-let currentPriceForUserStock = await getCurrentPrice();
-let candlesOnChart = await getCandlesOnChart();
+async function updateOnBuyOrSell() {
+  currentPriceForUserStock = await getCurrentPrice();
+  if (
+    currentPriceForUserStock >
+    data.datasets[0].data[data.datasets[0].data.length - 1].h
+  ) {
+    data.datasets[0].data[data.datasets[0].data.length - 1].h =
+      currentPriceForUserStock;
+    myChart.update();
+  } else if (
+    currentPriceForUserStock <
+    data.datasets[0].data[data.datasets[0].data.length - 1].l
+  ) {
+    data.datasets[0].data[data.datasets[0].data.length - 1].l =
+      currentPriceForUserStock;
+    myChart.update();
+  } else if (
+    currentPriceForUserStock >
+    data.datasets[0].data[data.datasets[0].data.length - 1].c
+  ) {
+    data.datasets[0].data[data.datasets[0].data - 1].c =
+      currentPriceForUserStock;
+    myChart.update();
+  } else if (
+    currentPriceForUserStock <
+    data.datasets[0].data[data.datasets[0].data.length - 1].c
+  ) {
+    data.datasets[0].data[data.datasets[0].data.length - 1].c =
+      currentPriceForUserStock;
+    myChart.update();
+  }
+}
+
+//displays the new stock price every second if at least one trade is made
+function needAFunctionNameForThisSoItCanCallItself() {
+  if (userTradeWithinCurrentSecond == true) {
+    updateOnBuyOrSell();
+    userTradeWithinCurrentSecond = false;
+    setTimeout(needAFunctionNameForThisSoItCanCallItself, 1000);
+  }
+}
 
 //adds to database as the function says
 async function addCandleToDatabase(
@@ -200,7 +202,7 @@ async function addCandleToDatabase(
 ) {
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/addCandleStickToDb",
+      `http://localhost:4000/api/${e}/addCandleStickToDb`,
       {
         timeFrame,
         openTime,
@@ -217,6 +219,7 @@ async function addCandleToDatabase(
         withCredentials: true,
       }
     );
+    console.log(response.data.stockId);
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -228,7 +231,9 @@ async function addCandleToDatabase(
 }
 
 //generates candles for time frame given
-function generateCandlesForTimeFrame(timeFrame) {
+async function generateCandlesForTimeFrame(timeFrame) {
+  let currentPriceForUserStock = await getCurrentPrice();
+  let candlesOnChart = await getCandlesOnChart();
   const candle = {
     x: Date.now(),
     o: currentPriceForUserStock,
@@ -252,6 +257,7 @@ function generateCandlesForTimeFrame(timeFrame) {
   }, timeFrame);
   candlesOnChart += 1;
   myChart.update();
+  console.log("candle created", candle);
 }
 
 //iterates through an array of time frames and runs a looping function to constantly add new candlesticks
@@ -263,44 +269,39 @@ async function generateCandlesForEACHtimeFrame() {
 }
 
 //if there are no candles then it goes to that function
-if (!candles) {
-  generateCandlesForEACHtimeFrame();
-}
+document.addEventListener("DOMContentLoaded", async () => {
+  console.log("page loaded");
+  let currentPriceForUserStock = await getCurrentPrice();
+  let candlesOnChart = await getCandlesOnChart();
+  if (
+    !candlesOnChart ||
+    candlesOnChart == null ||
+    candlesOnChart == 0 ||
+    candlesOnChart.length == 0
+  ) {
+    console.log("candle is being created, stock is new", candlesOnChart);
+    displayTimeFrameCandlesticks(60000);
+    generateCandlesForEACHtimeFrame();
+    needAFunctionNameForThisSoItCanCallItself();
+  } else {
+    console.log("stock is not new", candlesOnChart);
+    displayTimeFrameCandlesticks(60000);
+  }
+});
 
 let sharesAvailable;
 
-async function getSharesAvailable() {
-  try {
-    const response = await axios.post(
-      "http://localhost:4000/api/checkSharesAvailable",
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-    return response.shares;
-
-    if (response.status === 401) {
-      window.location.href = "../signinpage/signin.html";
-    }
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      console.log("redirect");
-      window.location.href = "../signinpage/signin.html";
-    } else {
-      console.error(error);
-    }
-  }
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //changes price of the stock
 async function changePrice(price) {
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/change-price",
+      `http://localhost:4000/api/${e}/change-price`,
       { price },
       {
         headers: {
@@ -323,7 +324,7 @@ async function changePriceOnUserTrade(currencySpent, currencyWasBought) {
   try {
     const placeholder = await getCurrentPrice();
     const sharesBoughtOrSold = currencySpent / placeholder;
-    sharesAvailable = getSharesAvailable();
+    sharesAvailable = await getSharesAvailable();
     const percentChangedBy =
       Math.round((sharesBoughtOrSold / sharesAvailable) * 0.05 * 100) / 100;
 
@@ -344,7 +345,6 @@ async function changePriceOnUserTrade(currencySpent, currencyWasBought) {
 }
 
 //event listeners for the html where user makes trade
-const userTradeAmount = document.getElementById("userTradeAmount");
 const buy = document.getElementById("buy");
 const sell = document.getElementById("sell");
 const invalidTradeText = document.getElementById("invalidTradeText");
@@ -352,7 +352,7 @@ const invalidTradeText = document.getElementById("invalidTradeText");
 async function checkUserCurrencyAmount() {
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/check-user-currency-amount",
+      `http://localhost:4000/api/check-user-currency-amount`,
       {},
       {
         headers: {
@@ -361,7 +361,7 @@ async function checkUserCurrencyAmount() {
         withCredentials: true,
       }
     );
-    return response.coins;
+    return response.data.coins;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("redirect");
@@ -372,8 +372,9 @@ async function checkUserCurrencyAmount() {
   }
 }
 
-function checkUserHasEnoughCurrency() {
-  const coins = checkUserCurrencyAmount();
+async function checkUserHasEnoughCurrency() {
+  const userTradeAmount = document.getElementById("userTradeAmount").value;
+  const coins = await checkUserCurrencyAmount();
   if (coins < userTradeAmount) {
     invalidTradeText.textContent = "Not enough coins";
     return;
@@ -386,55 +387,44 @@ function checkUserHasEnoughCurrency() {
   }
 }
 
-buy.addEventListener("click", () => {
-  if (checkUserHasEnoughCurrency() == "valid trade amount") {
+buy.addEventListener("click", async () => {
+  const coins = await checkUserCurrencyAmount();
+  console.log(coins);
+  if ((await checkUserHasEnoughCurrency()) == "valid trade amount") {
     changePriceOnUserTrade(userTradeAmount, true);
   }
 });
 
-sell.addEventListener("click", () => {
-  if (checkUserHasEnoughCurrency() == "valid trade amount") {
+sell.addEventListener("click", async () => {
+  if ((await checkUserHasEnoughCurrency()) == "valid trade amount") {
     changePriceOnUserTrade(userTradeAmount, true);
   }
+});
+
+const ws = new WebSocket("ws://localhost:4000");
+
+ws.addEventListener("open", (ws) => {
+  console.log("client connected");
+});
+
+ws.addEventListener("close", (ws) => {
+  console.log("client connected");
+});
+
+ws.addEventListener("error", (err) => {
+  console.error("WebSocket error:", err);
 });
 
 //recieve broadcast from trade to change variable
-socket.onmessage = (event) => {
+ws.onmessage = (event) => {
   if (data === "updateValue") {
     userTradeWithinCurrentSecond = true;
   }
 };
 
-// config
-const config = {
-  type: "candlestick",
-  data,
-  options: {
-    scales: {
-      x: {
-        type: "time",
-        time: { unit: "day" },
-        ticks: { color: "#fff" },
-      },
-      y: {
-        ticks: { color: "#fff" },
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-  },
-};
-
 //make naturally scrollable
 const canvas = document.getElementById("myChart");
 canvas.width = data.datasets[0].data.length * 100; // 100px per candle
-
-// render init block
-const myChart = new Chart(document.getElementById("myChart"), config);
-
 // Instantly assign Chart.js version
 const chartVersion = document.getElementById("chartVersion");
 chartVersion.innerText = Chart.version;
